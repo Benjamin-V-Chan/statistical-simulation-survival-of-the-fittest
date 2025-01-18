@@ -45,11 +45,26 @@ class Blob:
         pass
 
     def draw(self):
-        # draw circle
-        pass
+        pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
 def main():
+    if N_STARTING_BLOBS > len(STARTING_BLOB_IDS):
+        print(f"[ERROR] INSUFFICIENT NUMBER OF STARTING IDS TO HANDLE NUMBER OF STARTING BLOBS AMOUNT. MUST BE BELOW {len(STARTING_BLOB_IDS)}")
+        return
+
     blobs = []
+    for i in range(N_STARTING_BLOBS):
+        
+        blob_id = STARTING_BLOB_IDS[i]
+        blob = Blob(blob_id, RED, 
+        random.randint(DEFAULT_BLOB_SIZE, SCREEN_WIDTH - DEFAULT_BLOB_SIZE), 
+        random.randint(DEFAULT_BLOB_SIZE, SCREEN_HEIGHT - DEFAULT_BLOB_SIZE),
+        DEFAULT_BLOB_SIZE,
+        DEFAULT_BLOB_SPEED,
+        10)
+
+        blobs.append(blob)
+
     running = True
     while running:
         for event in pygame.event.get():
