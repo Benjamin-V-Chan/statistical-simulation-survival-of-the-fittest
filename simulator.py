@@ -1,24 +1,50 @@
-# imports
+import pygame
+import random
 
-# pygame initalizations
+pygame.init()
 
-# contants
-    # colors
-    # default blob values
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 800
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-# blob class
-    # __init__
-    # search_for_food
-    # draw
+# CONSTANTS
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 
-# main loop
 
-    # blobs list that contains list of all blobs
-        # randomly generate attribute values
-        # base it off of default blob values in constants
+class Blob:
+    def __init__(self):
+        # attributes per blob
+        pass
+        
+    def search_for_food(self):
+        # find nearest food
+        # move closer to it
+        # check if touching food (collision detection)
+            # if touching food, consume food and adjust hunger accordingly
 
-    # while loop (game loop)
-        # randomly shuffle list each iteration
-        # iterate and perform methods for each blob during each iteration
-    
-    # use display.flip?
+        pass
+
+    def draw(self):
+        # draw circle
+        pass
+
+def main():
+    blobs = []
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        screen.fill(WHITE)
+
+        random.shuffle(blobs) # Shuffle to ensure fairness and equal chance for best order
+        for blob in blobs:
+            blob.draw()
+
+        pygame.display.flip()
+
+    pygame.quit()
+
+main()
