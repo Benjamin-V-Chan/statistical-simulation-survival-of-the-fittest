@@ -36,13 +36,23 @@ class Blob:
         self.speed = speed
         self.hunger = hunger # 1-100, decreases a bit every day. If reaches 0, blob dies
 
-    def search_for_food(self):
-        # iteratively check each food cord
-            # use pythagoreom theorem to calculate distance
-            # find lowest distance
-        # move closer to it by using angles/slope
-        # check if touching food (collision detection)
-            # if touching food, consume food and adjust hunger accordingly
+    def food_action(self, foods):
+
+        closest_food = find_closest_obj(self, foods) # Find closest food obj out of list of food objects
+
+        if collision(self, closest_food):
+            # means we are touching food
+            # consume food and adjust hunger accordingly
+            pass
+
+        else:
+            angle = find_angle(self.x, self.y, closest_food.x, closest_food.y)
+            # iteratively check each food cord
+                # use pythagoreom theorem to calculate distance
+                # find lowest distance
+            # move closer to it by using angles/slope
+            # check if touching food (collision detection)
+                # if touching food, consume food and adjust hunger accordingly
 
         pass
 
