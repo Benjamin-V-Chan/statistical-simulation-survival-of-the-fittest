@@ -1,5 +1,7 @@
+import string
 import pygame
 import random
+import numpy as np
 
 pygame.init()
 
@@ -10,6 +12,18 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 # CONSTANTS
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+RED = (255, 64, 64)
+GREEN = (64, 255, 64)
+BLUE = (64, 64, 255)
+
+N_STARTING_BLOBS = 30
+
+STARTING_BLOB_IDS = list(string.ascii_letters) + list(string.digits)
+
+DEFAULT_BLOB_COLOR = RED
+DEFAULT_BLOB_SIZE = 15 # REFERS TO RADIUS
+DEFAULT_BLOB_SPEED = 10
+DEFAULT_BLOB_HUNGER = 100
 
 
 class Blob:
