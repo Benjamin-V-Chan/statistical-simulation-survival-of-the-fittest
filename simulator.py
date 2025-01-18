@@ -37,8 +37,10 @@ class Blob:
         self.hunger = hunger # 1-100, decreases a bit every day. If reaches 0, blob dies
 
     def search_for_food(self):
-        # find nearest food
-        # move closer to it
+        # iteratively check each food cord
+            # use pythagoreom theorem to calculate distance
+            # find lowest distance
+        # move closer to it by using angles/slope
         # check if touching food (collision detection)
             # if touching food, consume food and adjust hunger accordingly
 
