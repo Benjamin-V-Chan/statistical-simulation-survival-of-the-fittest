@@ -144,6 +144,9 @@ def main():
         for blob in blobs:
             blob.draw()
 
+        # TODO Add logic to store each game state for data purposes (time-based game state data so we can analyze trends over time and stuff)
+            # Should be a DF containing each Blob's attributes (diffrentiated by its id attribute) as well as the time (aka generation/day) of that data snapshot
+        
         pygame.display.flip()
 
     pygame.quit()
