@@ -27,6 +27,41 @@ DEFAULT_BLOB_HUNGER = 100
 
 N_STARTING_FOODS = 10
 
+# HELPER FUNCTIONS
+
+def find_distance(x1, x2, y1, y2): # distance between both cords (x, y)
+    # utilize pythagorean theorem to calculate distance
+        # find hypotenuse using x and y distance differences
+    # return distance
+    pass
+
+def find_angle(x1, x2, y1, y2): # find angle (x1, y1) needs to direct itself to point towards (x2, y2)
+    # calculate angle needed to go to closest food center
+        # use x, y cords as well as trig functions
+    # return angle
+    pass
+
+def find_closest_obj(obj_a, list_of_objects): # obj_a and all objects within list_of_objects parameters are classes with x, y, and size (radius) attributes
+    # initialize "closest obj" var
+        # initialize as first obj in list so we can have a starting comparison var
+        # remove that obj from list to speed things up
+    # iterate through every obj in list of objects
+    # update closest obj var accordingly
+    # return closest obj var
+    for obj_b in list_of_objects:
+        pass
+    pass
+
+def collision(obj_a, obj_b): # Both parameters are classes with x, y, and size (radius) attributes
+    # utilize find_distance func to find distance betwene both objects
+    # check if distance between both objects is greater or less then the sum of both objects' radiuses
+        # essentially checking if the circles are overlapping, since by adding both radiuses that gives the minimum distance 2 circles should be from eachother to not overlap
+        # anything less then the 2 radius sum means the circles are colliding
+            # return true if less, false otherwise
+    pass
+
+
+
 class Food:
     # TODO Create Food Class
         # Should have x, y, size, color, and potentially id attributes
