@@ -98,6 +98,11 @@ class Blob:
 
         pass
 
+    def move(self, custom_speed=None):
+        # if custom speed is set as a custom param, move the obj accordingly
+        # else, move obj normally. use some sort of direction/angle/vector logic (maybe a param) to make this func better
+        pass
+
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
