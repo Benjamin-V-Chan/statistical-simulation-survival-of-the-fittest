@@ -25,6 +25,13 @@ DEFAULT_BLOB_SIZE = 15 # REFERS TO RADIUS
 DEFAULT_BLOB_SPEED = 10
 DEFAULT_BLOB_HUNGER = 100
 
+N_STARTING_FOODS = 10
+
+class Food:
+    # TODO Create Food Class
+        # Should have x, y, size, color, and potentially id attributes
+    pass
+
 
 class Blob:
     def __init__(self, id, color, x, y, size, speed, hunger):
@@ -76,6 +83,14 @@ def main():
         10)
 
         blobs.append(blob)
+
+    # will remain static food elements for now. will change over time
+    foods = []
+    for _ in range(N_STARTING_FOODS):
+
+        # TODO Food class generation logic
+
+        pass
 
     running = True
     while running:
