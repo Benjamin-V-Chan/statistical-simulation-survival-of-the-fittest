@@ -13,10 +13,15 @@ WHITE = (255, 255, 255)
 
 
 class Blob:
-    def __init__(self):
-        # attributes per blob
-        pass
-        
+    def __init__(self, id, color, x, y, size, speed, hunger):
+        self.id = id
+        self.color = color
+        self.x = x
+        self.y = y
+        self.size = size
+        self.speed = speed
+        self.hunger = hunger # 1-100, decreases a bit every day. If reaches 0, blob dies
+
     def search_for_food(self):
         # find nearest food
         # move closer to it
