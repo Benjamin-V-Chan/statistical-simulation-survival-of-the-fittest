@@ -30,9 +30,9 @@ N_STARTING_FOODS = 10
 
 # HELPER FUNCTIONS
 
-def get_radius_endpoint(x, y, radius, theta): # Finds cords (x, y) of radius endpoint of a circle, based off center point cords (x, y), the radius distance, and theta (angle, in degrees)
-    return (x + radius * math.cos(math.radians(theta)),
-            y - radius * math.sin(math.radians(theta)))
+def get_radius_endpoint(x, y, radius, theta): # Finds cords (x, y) of radius endpoint of a circle, based off center point cords (x, y), the radius distance, and theta (angle, in radians)
+    return (x + radius * math.cos(theta),
+            y - radius * math.sin(theta))
 
 def get_distance(x1, x2, y1, y2): # distance between both cords (x, y)
     return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
