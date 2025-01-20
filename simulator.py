@@ -30,10 +30,13 @@ N_STARTING_FOODS = 10
 
 # HELPER FUNCTIONS
 
-def find_distance(x1, x2, y1, y2): # distance between both cords (x, y)
+def get_radius_endpoint(x, y, radius, theta): # Finds cords (x, y) of radius endpoint of a circle, based off center point cords (x, y), the radius distance, and theta (angle)
+    pass
+
+def get_distance(x1, x2, y1, y2): # distance between both cords (x, y)
     return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
-def find_angle(x1, x2, y1, y2): # find angle (x1, y1) needs to direct itself to point towards (x2, y2)
+def get_theta(x1, x2, y1, y2): # find theta (angle) (x1, y1) needs to direct itself to point towards (x2, y2)
     # calculate angle needed to go to closest food center
         # use x, y cords as well as trig functions
     # return angle
@@ -86,11 +89,11 @@ class Blob:
             pass
 
         else: # WE ARE NOT TOUCHING FOOD
-            direction = find_angle(self.x, self.y, closest_food.x, closest_food.y)
-            self.move(direction)
+            theta = get_theta(self.x, self.y, closest_food.x, closest_food.y)
+            self.move(theta)
 
-    def move(self, direction, custom_speed=None):
-        # use direction to determine which direction to move towards (use self.speed to determine the intensity of movement)
+    def move(self, theta, custom_speed=None):
+        # use theta to determine where to move towards (use self.speed to determine the intensity of movement)
         # if custom speed is set as a custom param, move the obj accordingly
         pass
 
