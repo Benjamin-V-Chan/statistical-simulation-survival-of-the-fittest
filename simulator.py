@@ -82,25 +82,18 @@ class Blob:
 
         closest_food = find_closest_obj(self, foods) # Find closest food obj out of list of food objects
 
-        if collision(self, closest_food):
+        if collision(self, closest_food): # WE ARE TOUCHING FOOD
             # means we are touching food
             # consume food and adjust hunger accordingly
             pass
 
-        else:
-            angle = find_angle(self.x, self.y, closest_food.x, closest_food.y)
-            # iteratively check each food cord
-                # use pythagoreom theorem to calculate distance
-                # find lowest distance
-            # move closer to it by using angles/slope
-            # check if touching food (collision detection)
-                # if touching food, consume food and adjust hunger accordingly
+        else: # WE ARE NOT TOUCHING FOOD
+            direction = find_angle(self.x, self.y, closest_food.x, closest_food.y)
+            self.move(direction)
 
-        pass
-
-    def move(self, custom_speed=None):
+    def move(self, direction, custom_speed=None):
+        # use direction to determine which direction to move towards (use self.speed to determine the intensity of movement)
         # if custom speed is set as a custom param, move the obj accordingly
-        # else, move obj normally. use some sort of direction/angle/vector logic (maybe a param) to make this func better
         pass
 
     def draw(self):
