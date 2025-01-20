@@ -2,6 +2,7 @@ import string
 import pygame
 import random
 import numpy as np
+import math
 
 pygame.init()
 
@@ -30,10 +31,7 @@ N_STARTING_FOODS = 10
 # HELPER FUNCTIONS
 
 def find_distance(x1, x2, y1, y2): # distance between both cords (x, y)
-    # utilize pythagorean theorem to calculate distance
-        # find hypotenuse using x and y distance differences
-    # return distance
-    pass
+    return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
 def find_angle(x1, x2, y1, y2): # find angle (x1, y1) needs to direct itself to point towards (x2, y2)
     # calculate angle needed to go to closest food center
