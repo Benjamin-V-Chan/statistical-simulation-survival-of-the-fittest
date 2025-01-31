@@ -58,12 +58,10 @@ def find_closest_obj(obj_a, list_of_objects): # obj_a and all objects within lis
     return closest_obj
 
 def collision(obj_a, obj_b): # Both parameters are classes with x, y, and size (radius) attributes
-    # utilize find_distance func to find distance betwene both objects
-    # check if distance between both objects is greater or less then the sum of both objects' radiuses
-        # essentially checking if the circles are overlapping, since by adding both radiuses that gives the minimum distance 2 circles should be from eachother to not overlap
-        # anything less then the 2 radius sum means the circles are colliding
-            # return true if less, false otherwise
-    pass
+    distance = get_distance(obj_a.x, obj_b.x, obj_a.y, obj_b.y)
+    if distance <= obj_a.size + obj_b.size:
+        return True
+    return False
 
 
 
