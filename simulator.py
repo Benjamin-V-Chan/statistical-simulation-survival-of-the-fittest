@@ -41,15 +41,21 @@ def get_theta(x1, x2, y1, y2): # find theta (in radians) that (x1, y1) needs to 
     return math.atan2(y2 - y1, x2 - x1)
 
 def find_closest_obj(obj_a, list_of_objects): # obj_a and all objects within list_of_objects parameters are classes with x, y, and size (radius) attributes
-    # initialize "closest obj" var
-        # initialize as first obj in list so we can have a starting comparison var
-        # remove that obj from list to speed things up
-    # iterate through every obj in list of objects
-    # update closest obj var accordingly
-    # return closest obj var
+    
+    if len(list_of_objects) <= 1:
+        print("[WARNING] ONE OBJ LEFT: FIND_CLOSEST_OBJ")
+
+    closest_obj = list_of_objects[0]
+    closest_obj_distance = get_distance(obj_a.x, closest_obj.x, obj_a.y, closest_obj.y)
+    list_of_objects.pop(0)
+
     for obj_b in list_of_objects:
-        pass
-    pass
+        distance = get_distance(obj_a.x, obj_b.x, obj_a.y, obj_b.y)
+        if distance < closest_obj_distance: # new closest obj
+            closest_obj_distance = distance
+            closest_obj = obj_b
+
+    return closest_obj
 
 def collision(obj_a, obj_b): # Both parameters are classes with x, y, and size (radius) attributes
     # utilize find_distance func to find distance betwene both objects
