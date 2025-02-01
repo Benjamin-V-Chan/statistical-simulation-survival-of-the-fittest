@@ -68,13 +68,21 @@ def calculate_circle_area(radius):
     return math.pi * (radius ** 2)
 
 class Food:
-    def __init__(self, id, x, y, size, color):
+    def __init__(self, id, color, x, y, size):
         self.id = id
         self.x = x
         self.y = y
         self.size = size
         self.color = color
 
+        # energy_value calculation (just calculates area of food then scales down by 10 and rounds)
+        self.energy_value = round(math.pi * (size ** 2) / 10)
+
+    def __eq__(self, other):
+        if isinstance(other, Food):
+            return self.id == other.id
+        return False
+    
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
