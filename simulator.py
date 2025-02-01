@@ -98,22 +98,26 @@ class Blob:
         self.actions = []
 
     def food_action(self, foods):
-
+        
         closest_food = find_closest_obj(self, foods) # Find closest food obj out of list of food objects
 
         if collision(self, closest_food): # WE ARE TOUCHING FOOD
-            # means we are touching food
-            # consume food and adjust hunger accordingly
-            pass
+            self.energy += closest_food.energy_value # consume food and get energy
+            foods.remove(closest_food) # remove food from ecosystem
+
+            self.actions.append("consume food")
 
         else: # WE ARE NOT TOUCHING FOOD
             theta = get_theta(self.x, self.y, closest_food.x, closest_food.y)
-            self.move(theta, self.speed)
+            self.move(theta)
+            self.use_energy_for_movement()
 
-    def move(self, theta, speed):
-        radius_endpoint_x, radius_endpoint_y = get_radius_endpoint(self.x, self.y, speed, theta)
-        self.x += radius_endpoint_x
-        self.y += radius_endpoint_y
+    def move(self, theta):
+        radius_endpoint_x, radius_endpoint_y = get_radius_endpoint(self.x, self.y, self.speed, theta)
+        self.x = radius_endpoint_x
+        self.y = radius_endpoint_y
+
+        self.actions.append("move")
 
     def use_energy_for_movement(self):
         area_size = calculate_circle_area(self.size)
