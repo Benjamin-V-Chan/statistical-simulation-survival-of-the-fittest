@@ -96,7 +96,7 @@ class Blob:
         self.speed = speed
         self.energy = energy
         self.actions = []
-        
+
     def food_action(self, foods):
 
         closest_food = find_closest_obj(self, foods) # Find closest food obj out of list of food objects
@@ -115,6 +115,22 @@ class Blob:
         self.x += radius_endpoint_x
         self.y += radius_endpoint_y
 
+    def use_energy_for_movement(self):
+        area_size = calculate_circle_area(self.size)
+
+        # calculate energy use based off area_size * speed scaled down to 10 and rounded
+        energy_used = round(area_size * self.speed / 10)
+        self.energy -= energy_used
+        self.actions.append("move energy")
+
+    def use_constant_energy(self): # energy used constantly, no matter what
+        area_size = calculate_circle_area(self.size)
+
+        # calculate energy use based off area_size scaled down to 10 and rounded
+        energy_used = round(area_size / 10)
+        self.energy -= energy_used
+
+        self.actions.append("constant energy")
 
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
