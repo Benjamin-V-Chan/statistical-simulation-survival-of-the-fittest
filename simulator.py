@@ -42,17 +42,16 @@ def get_distance(x1, y1, x2, y2): # distance between both cords (x, y)
 def get_theta(x1, y1, x2, y2): # find theta (in radians) that (x1, y1) needs to direct itself to point towards (x2, y2)
     return math.atan2(y2 - y1, x2 - x1)
 
-def find_closest_obj(obj_a, list_of_objects): # obj_a and all objects within list_of_objects parameters are classes with x, y, and size (radius) attributes
+def find_closest_obj(obj_a, list_of_objects): # obj_a and all objects within list_of_objects parameters are classes with x and y attributes
     
     if len(list_of_objects) <= 1:
         print("[WARNING] ONE OBJ LEFT: FIND_CLOSEST_OBJ")
 
     closest_obj = list_of_objects[0]
-    closest_obj_distance = get_distance(obj_a.x, closest_obj.x, obj_a.y, closest_obj.y)
-    list_of_objects.pop(0)
+    closest_obj_distance = get_distance(obj_a.x, obj_a.y, closest_obj.x, closest_obj.y)
 
-    for obj_b in list_of_objects:
-        distance = get_distance(obj_a.x, obj_b.x, obj_a.y, obj_b.y)
+    for obj_b in list_of_objects[1:]: # avoid checking index 0 since that is already set for closest_obj
+        distance = get_distance(obj_a.x, obj_a.y, obj_b.x, obj_b.y)
         if distance < closest_obj_distance: # new closest obj
             closest_obj_distance = distance
             closest_obj = obj_b
@@ -60,11 +59,13 @@ def find_closest_obj(obj_a, list_of_objects): # obj_a and all objects within lis
     return closest_obj
 
 def collision(obj_a, obj_b): # Both parameters are classes with x, y, and size (radius) attributes
-    distance = get_distance(obj_a.x, obj_b.x, obj_a.y, obj_b.y)
+    distance = get_distance(obj_a.x, obj_a.y, obj_b.x, obj_b.y)
     if distance <= obj_a.size + obj_b.size:
         return True
     return False
 
+def calculate_circle_area(radius):
+    return math.pi * (radius ** 2)
 
 class Food:
     def __init__(self, id, x, y, size, color):
