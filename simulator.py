@@ -116,22 +116,29 @@ def main():
     for i in range(N_STARTING_BLOBS):
         
         blob_id = STARTING_BLOB_IDS[i]
-        blob = Blob(blob_id, RED, 
-        random.randint(DEFAULT_BLOB_SIZE, SCREEN_WIDTH - DEFAULT_BLOB_SIZE), 
-        random.randint(DEFAULT_BLOB_SIZE, SCREEN_HEIGHT - DEFAULT_BLOB_SIZE),
-        DEFAULT_BLOB_SIZE,
-        DEFAULT_BLOB_SPEED,
-        10)
+        blob = Blob(blob_id, 
+                    DEFAULT_BLOB_COLOR, 
+                    random.randint(DEFAULT_BLOB_SIZE, SCREEN_WIDTH - DEFAULT_BLOB_SIZE),
+                    random.randint(DEFAULT_BLOB_SIZE, SCREEN_HEIGHT - DEFAULT_BLOB_SIZE),
+                    DEFAULT_BLOB_SIZE,
+                    DEFAULT_BLOB_SPEED,
+                    10)
 
         blobs.append(blob)
 
     # will remain static food elements for now. will change over time
     foods = []
-    for _ in range(N_STARTING_FOODS):
+    for i in range(N_STARTING_FOODS):
 
-        # TODO Food class generation logic
+        food_id = STARTING_FOOD_IDS[i]
+        food = Food(food_id, 
+                    DEFAULT_FOOD_COLOR, 
+                    random.randint(DEFAULT_FOOD_SIZE, SCREEN_WIDTH - DEFAULT_FOOD_SIZE), 
+                    random.randint(DEFAULT_FOOD_SIZE, SCREEN_HEIGHT - DEFAULT_FOOD_SIZE),
+                    DEFAULT_FOOD_SIZE,
+                    10)
 
-        pass
+        foods.append(food)
 
     running = True
     while running:
