@@ -8,6 +8,7 @@ pygame.init()
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 800
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+clock = pygame.time.Clock()
 
 # CONSTANTS
 BLACK = (0, 0, 0)
@@ -31,6 +32,7 @@ DEFAULT_FOOD_COLOR = RED
 DEFAULT_FOOD_SIZE = 5 # REFERS TO RADIUS
 
 FPS = 20
+
 # HELPER FUNCTIONS
 
 def get_radius_endpoint(x, y, radius, theta): # Finds cords (x, y) of radius endpoint of a circle, based off center point cords (x, y), the radius distance, and theta (angle, in radians)
@@ -199,19 +201,27 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-        screen.fill(WHITE)
+        screen.fill(BLACK)
 
         for food in foods:
             food.draw()
-
+        
         random.shuffle(blobs) # Shuffle to ensure fairness and equal chance for best order
         for blob in blobs:
+            blob.use_constant_energy()
+            blob.food_action(foods)
+            if blob.energy <= 0: # Blob no longer has energy, so it will perish
+                blobs.remove(blob)
+                blob.color = WHITE # Change color to show it will die
+            blob.print_stats()
             blob.draw()
 
         # TODO Add logic to store each game state for data purposes (time-based game state data so we can analyze trends over time and stuff)
             # Should be a DF containing each Blob's attributes (diffrentiated by its id attribute) as well as the time (aka generation/day) of that data snapshot
         
         pygame.display.flip()
+
+        clock.tick(FPS)
 
     pygame.quit()
 
