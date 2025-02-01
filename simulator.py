@@ -68,9 +68,12 @@ def collision(obj_a, obj_b): # Both parameters are classes with x, y, and size (
 
 
 class Food:
-    # TODO Create Food Class
-        # Should have x, y, size, color, and potentially id attributes
-    pass
+    def __init__(self, id, x, y, size, color):
+        self.id = id
+        self.x = x
+        self.y = y
+        self.size = size
+        self.color = color
 
 
 class Blob:
