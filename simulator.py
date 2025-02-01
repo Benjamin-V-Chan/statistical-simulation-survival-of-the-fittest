@@ -136,6 +136,27 @@ class Blob:
 
         self.actions.append("constant energy")
 
+    def print_stats(self):
+        print(f'''
+
+        ====== BLOB STATS ======
+        id: {self.id}
+        color: {self.color}
+        x: {self.x}
+        y: {self.y}
+        size: {self.size}
+        speed: {self.speed}
+        energy: {self.energy}
+        actions: {self.actions}
+        ========================
+
+        ''')
+
+    def __eq__(self, other):
+        if isinstance(other, Blob):
+            return self.id == other.id
+        return False
+    
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
