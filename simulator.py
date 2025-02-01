@@ -17,21 +17,23 @@ RED = (255, 64, 64)
 GREEN = (64, 255, 64)
 BLUE = (64, 64, 255)
 
-N_STARTING_BLOBS = 1
-STARTING_BLOB_IDS = list(string.ascii_letters) + list(string.digits)
+N_STARTING_BLOBS = 10
+STARTING_BLOB_IDS = list(string.ascii_letters) + list(string.digits) + list(string.ascii_letters) + list(string.digits)
 
 DEFAULT_BLOB_COLOR = BLUE
 DEFAULT_BLOB_SIZE = 10 # REFERS TO RADIUS
 DEFAULT_BLOB_SPEED = 1
-DEFAULT_BLOB_ENERGY = 100
+DEFAULT_BLOB_ENERGY = 1000
 
-N_STARTING_FOODS = 20
-STARTING_FOOD_IDS = list(string.ascii_letters) + list(string.digits)
+N_STARTING_FOODS = 50
+STARTING_FOOD_IDS = list(string.ascii_letters) + list(string.digits) + list(string.ascii_letters) + list(string.digits)
 
 DEFAULT_FOOD_COLOR = RED
 DEFAULT_FOOD_SIZE = 5 # REFERS TO RADIUS
 
-FPS = 20
+DEFAULT_FOOD_MULTIPLIER = 4
+
+FPS = 30
 
 # HELPER FUNCTIONS
 
@@ -78,7 +80,7 @@ class Food:
         self.color = color
 
         # energy_value calculation (just calculates area of food then scales down by 10 and rounds)
-        self.energy_value = round(math.pi * (size ** 2) / 10)
+        self.energy_value = round(DEFAULT_FOOD_MULTIPLIER * math.pi * (size ** 2))
 
     def __eq__(self, other):
         if isinstance(other, Food):
@@ -104,6 +106,9 @@ class Blob:
         closest_food = find_closest_obj(self, foods) # Find closest food obj out of list of food objects
 
         if collision(self, closest_food): # WE ARE TOUCHING FOOD
+            print()
+            print(self.energy)
+            print(closest_food.energy_value)
             self.energy += closest_food.energy_value # consume food and get energy
             foods.remove(closest_food) # remove food from ecosystem
 
@@ -125,7 +130,7 @@ class Blob:
         area_size = calculate_circle_area(self.size)
 
         # calculate energy use based off area_size * speed scaled down to 10 and rounded
-        energy_used = round(area_size * self.speed / 10)
+        energy_used = round(area_size * self.speed / 200)
         self.energy -= energy_used
         self.actions.append("move energy")
 
@@ -133,12 +138,16 @@ class Blob:
         area_size = calculate_circle_area(self.size)
 
         # calculate energy use based off area_size scaled down to 10 and rounded
-        energy_used = round(area_size / 10)
+        energy_used = round(area_size / 200)
         self.energy -= energy_used
 
         self.actions.append("constant energy")
 
-    def print_stats(self):
+    def print_stats(self, show_actions=True):
+        actions = "'show_actions' TURNED OFF"
+        if show_actions:
+            actions = self.actions
+
         print(f'''
 
         ====== BLOB STATS ======
@@ -149,7 +158,7 @@ class Blob:
         size: {self.size}
         speed: {self.speed}
         energy: {self.energy}
-        actions: {self.actions}
+        actions: {actions}
         ========================
 
         ''')
@@ -213,7 +222,7 @@ def main():
             if blob.energy <= 0: # Blob no longer has energy, so it will perish
                 blobs.remove(blob)
                 blob.color = WHITE # Change color to show it will die
-            blob.print_stats()
+            # blob.print_stats(show_actions=False)
             blob.draw()
 
         # TODO Add logic to store each game state for data purposes (time-based game state data so we can analyze trends over time and stuff)
