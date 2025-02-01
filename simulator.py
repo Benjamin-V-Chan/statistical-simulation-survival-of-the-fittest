@@ -161,6 +161,20 @@ class Blob:
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
 def main():
+
+    # will remain static food elements for now. will change over time
+    foods = []
+    for i in range(N_STARTING_FOODS):
+
+        food_id = STARTING_FOOD_IDS[i]
+        food = Food(food_id, 
+                    DEFAULT_FOOD_COLOR, 
+                    random.randint(DEFAULT_FOOD_SIZE, SCREEN_WIDTH - DEFAULT_FOOD_SIZE), 
+                    random.randint(DEFAULT_FOOD_SIZE, SCREEN_HEIGHT - DEFAULT_FOOD_SIZE),
+                    DEFAULT_FOOD_SIZE)
+
+        foods.append(food)
+
     if N_STARTING_BLOBS > len(STARTING_BLOB_IDS):
         print(f"[ERROR] INSUFFICIENT NUMBER OF STARTING IDS TO HANDLE NUMBER OF STARTING BLOBS AMOUNT. MUST BE BELOW {len(STARTING_BLOB_IDS)}")
         return
@@ -175,23 +189,9 @@ def main():
                     random.randint(DEFAULT_BLOB_SIZE, SCREEN_HEIGHT - DEFAULT_BLOB_SIZE),
                     DEFAULT_BLOB_SIZE,
                     DEFAULT_BLOB_SPEED,
-                    10)
+                    DEFAULT_BLOB_ENERGY)
 
         blobs.append(blob)
-
-    # will remain static food elements for now. will change over time
-    foods = []
-    for i in range(N_STARTING_FOODS):
-
-        food_id = STARTING_FOOD_IDS[i]
-        food = Food(food_id, 
-                    DEFAULT_FOOD_COLOR, 
-                    random.randint(DEFAULT_FOOD_SIZE, SCREEN_WIDTH - DEFAULT_FOOD_SIZE), 
-                    random.randint(DEFAULT_FOOD_SIZE, SCREEN_HEIGHT - DEFAULT_FOOD_SIZE),
-                    DEFAULT_FOOD_SIZE,
-                    10)
-
-        foods.append(food)
 
     running = True
     while running:
