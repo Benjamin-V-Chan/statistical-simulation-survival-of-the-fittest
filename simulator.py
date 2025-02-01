@@ -87,15 +87,16 @@ class Food:
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
 class Blob:
-    def __init__(self, id, color, x, y, size, speed, hunger):
+    def __init__(self, id, color, x, y, size, speed, energy):
         self.id = id
         self.color = color
         self.x = x
         self.y = y
         self.size = size
         self.speed = speed
-        self.hunger = hunger # 1-100, decreases a bit every day. If reaches 0, blob dies
-
+        self.energy = energy
+        self.actions = []
+        
     def food_action(self, foods):
 
         closest_food = find_closest_obj(self, foods) # Find closest food obj out of list of food objects
