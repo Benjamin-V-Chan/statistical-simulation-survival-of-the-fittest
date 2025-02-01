@@ -18,15 +18,18 @@ GREEN = (64, 255, 64)
 BLUE = (64, 64, 255)
 
 N_STARTING_BLOBS = 30
-
 STARTING_BLOB_IDS = list(string.ascii_letters) + list(string.digits)
 
-DEFAULT_BLOB_COLOR = RED
+DEFAULT_BLOB_COLOR = BLUE
 DEFAULT_BLOB_SIZE = 15 # REFERS TO RADIUS
 DEFAULT_BLOB_SPEED = 10
 DEFAULT_BLOB_HUNGER = 100
 
-N_STARTING_FOODS = 10
+N_STARTING_FOODS = 20
+STARTING_FOOD_IDS = list(string.ascii_letters) + list(string.digits)
+
+DEFAULT_FOOD_COLOR = RED
+DEFAULT_FOOD_SIZE = 5 # REFERS TO RADIUS
 
 # HELPER FUNCTIONS
 
@@ -62,7 +65,6 @@ def collision(obj_a, obj_b): # Both parameters are classes with x, y, and size (
     if distance <= obj_a.size + obj_b.size:
         return True
     return False
-
 
 
 class Food:
