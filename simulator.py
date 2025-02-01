@@ -1,7 +1,6 @@
 import string
 import pygame
 import random
-import numpy as np
 import math
 
 pygame.init()
@@ -97,12 +96,13 @@ class Blob:
 
         else: # WE ARE NOT TOUCHING FOOD
             theta = get_theta(self.x, self.y, closest_food.x, closest_food.y)
-            self.move(theta)
+            self.move(theta, self.speed)
 
-    def move(self, theta, custom_speed=None):
-        # use theta to determine where to move towards (use self.speed to determine the intensity of movement)
-        # if custom speed is set as a custom param, move the obj accordingly
-        pass
+    def move(self, theta, speed):
+        radius_endpoint_x, radius_endpoint_y = get_radius_endpoint(self.x, self.y, speed, theta)
+        self.x += radius_endpoint_x
+        self.y += radius_endpoint_y
+
 
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
@@ -147,6 +147,9 @@ def main():
                 running = False
 
         screen.fill(WHITE)
+
+        for food in foods:
+            food.draw()
 
         random.shuffle(blobs) # Shuffle to ensure fairness and equal chance for best order
         for blob in blobs:
