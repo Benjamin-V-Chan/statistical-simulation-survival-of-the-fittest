@@ -34,13 +34,12 @@ FPS = 20
 # HELPER FUNCTIONS
 
 def get_radius_endpoint(x, y, radius, theta): # Finds cords (x, y) of radius endpoint of a circle, based off center point cords (x, y), the radius distance, and theta (angle, in radians)
-    return (x + radius * math.cos(theta),
-            y - radius * math.sin(theta))
+    return (x + radius * math.cos(theta), y + radius * math.sin(theta))
 
-def get_distance(x1, x2, y1, y2): # distance between both cords (x, y)
-    return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+def get_distance(x1, y1, x2, y2): # distance between both cords (x, y)
+    return math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
 
-def get_theta(x1, x2, y1, y2): # find theta (in radians) that (x1, y1) needs to direct itself to point towards (x2, y2)
+def get_theta(x1, y1, x2, y2): # find theta (in radians) that (x1, y1) needs to direct itself to point towards (x2, y2)
     return math.atan2(y2 - y1, x2 - x1)
 
 def find_closest_obj(obj_a, list_of_objects): # obj_a and all objects within list_of_objects parameters are classes with x, y, and size (radius) attributes
