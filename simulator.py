@@ -74,6 +74,8 @@ class Food:
         self.size = size
         self.color = color
 
+    def draw(self):
+        pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
 class Blob:
     def __init__(self, id, color, x, y, size, speed, hunger):
