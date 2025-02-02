@@ -32,8 +32,20 @@ DEFAULT_FOOD_COLOR = RED
 DEFAULT_FOOD_SIZE = 5 # REFERS TO RADIUS
 
 DEFAULT_FOOD_MULTIPLIER = 4
+ONE_OUT_OF_CHANCE_OF_FOOD_SPAWNING_PER_FRAME = 30
 
 FPS = 30
+
+# GLOBAL VARIABLES
+
+# Track assigned IDs
+used_food_ids = set()
+used_blob_ids = set()
+
+# Track all existing foods and blobs
+foods = []
+blobs = []
+
 
 # HELPER FUNCTIONS
 
@@ -106,10 +118,8 @@ class Blob:
         closest_food = find_closest_obj(self, foods) # Find closest food obj out of list of food objects
 
         if collision(self, closest_food): # WE ARE TOUCHING FOOD
-            print()
-            print(self.energy)
-            print(closest_food.energy_value)
             self.energy += closest_food.energy_value # consume food and get energy
+            used_food_ids.remove(closest_food.id)
             foods.remove(closest_food) # remove food from ecosystem
 
             self.actions.append("consume food")
@@ -174,35 +184,48 @@ class Blob:
 def main():
 
     # will remain static food elements for now. will change over time
-    foods = []
     for i in range(N_STARTING_FOODS):
 
-        food_id = STARTING_FOOD_IDS[i]
-        food = Food(food_id, 
-                    DEFAULT_FOOD_COLOR, 
-                    random.randint(DEFAULT_FOOD_SIZE, SCREEN_WIDTH - DEFAULT_FOOD_SIZE), 
-                    random.randint(DEFAULT_FOOD_SIZE, SCREEN_HEIGHT - DEFAULT_FOOD_SIZE),
-                    DEFAULT_FOOD_SIZE)
+        # Ensure a unique food_id is assigned
+        available_ids = [id for id in STARTING_FOOD_IDS if id not in used_food_ids]
+        
+        if available_ids:  # Ensure IDs are available before proceeding
+            food_id = random.choice(available_ids)  # Select a unique ID
+            used_food_ids.add(food_id)  # Mark it as used
+            
+            food = Food(food_id, 
+                        DEFAULT_FOOD_COLOR, 
+                        random.randint(DEFAULT_FOOD_SIZE, SCREEN_WIDTH - DEFAULT_FOOD_SIZE), 
+                        random.randint(DEFAULT_FOOD_SIZE, SCREEN_HEIGHT - DEFAULT_FOOD_SIZE),
+                        DEFAULT_FOOD_SIZE)
 
-        foods.append(food)
+            foods.append(food)
+        else:
+            print("[WARNING] No more unique food IDs available!")
 
     if N_STARTING_BLOBS > len(STARTING_BLOB_IDS):
         print(f"[ERROR] INSUFFICIENT NUMBER OF STARTING IDS TO HANDLE NUMBER OF STARTING BLOBS AMOUNT. MUST BE BELOW {len(STARTING_BLOB_IDS)}")
         return
 
-    blobs = []
     for i in range(N_STARTING_BLOBS):
-        
-        blob_id = STARTING_BLOB_IDS[i]
-        blob = Blob(blob_id, 
-                    DEFAULT_BLOB_COLOR, 
-                    random.randint(DEFAULT_BLOB_SIZE, SCREEN_WIDTH - DEFAULT_BLOB_SIZE),
-                    random.randint(DEFAULT_BLOB_SIZE, SCREEN_HEIGHT - DEFAULT_BLOB_SIZE),
-                    DEFAULT_BLOB_SIZE,
-                    DEFAULT_BLOB_SPEED,
-                    DEFAULT_BLOB_ENERGY)
 
-        blobs.append(blob)
+        # Ensure a unique food_id is assigned
+        available_ids = [id for id in STARTING_BLOB_IDS if id not in used_blob_ids]
+        
+        if available_ids:  # Ensure IDs are available before proceeding
+            blob_id = random.choice(available_ids)  # Select a unique ID
+            used_blob_ids.add(blob_id)  # Mark it as used
+
+            blob_id = STARTING_BLOB_IDS[i]
+            blob = Blob(blob_id, 
+                        DEFAULT_BLOB_COLOR, 
+                        random.randint(DEFAULT_BLOB_SIZE, SCREEN_WIDTH - DEFAULT_BLOB_SIZE),
+                        random.randint(DEFAULT_BLOB_SIZE, SCREEN_HEIGHT - DEFAULT_BLOB_SIZE),
+                        DEFAULT_BLOB_SIZE,
+                        DEFAULT_BLOB_SPEED,
+                        DEFAULT_BLOB_ENERGY)
+
+            blobs.append(blob)
 
     running = True
     while running:
@@ -211,6 +234,25 @@ def main():
                 running = False
 
         screen.fill(BLACK)
+
+        # CHANCE OF FOOD SPAWNING
+        if random.randint(1, ONE_OUT_OF_CHANCE_OF_FOOD_SPAWNING_PER_FRAME) == 1:
+            # Ensure a unique food_id is assigned
+            available_ids = [id for id in STARTING_FOOD_IDS if id not in used_food_ids]
+            
+            if available_ids:  # Ensure IDs are available before proceeding
+                food_id = random.choice(available_ids)  # Select a unique ID
+                used_food_ids.add(food_id)  # Mark it as used
+                
+                food = Food(food_id, 
+                            DEFAULT_FOOD_COLOR, 
+                            random.randint(DEFAULT_FOOD_SIZE, SCREEN_WIDTH - DEFAULT_FOOD_SIZE), 
+                            random.randint(DEFAULT_FOOD_SIZE, SCREEN_HEIGHT - DEFAULT_FOOD_SIZE),
+                            DEFAULT_FOOD_SIZE)
+
+                foods.append(food)
+            else:
+                print("[WARNING] No more unique food IDs available!")
 
         for food in foods:
             food.draw()
