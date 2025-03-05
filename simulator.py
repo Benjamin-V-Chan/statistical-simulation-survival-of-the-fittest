@@ -49,21 +49,23 @@ BLOB_CONFIG = {
 }
 
 # FOOD CONFIG
-
+FOOD_CONFIG = {
+    "FOOD_COLORS": [RED],
+    "FOOD_SIZE": {
+        "mean": 30,
+        "std_dev": 5,
+        "min": 5,
+        "max": 50
+    },
+    "FOOD_ENERGY_TO_SIZE_MULTIPLIER": 4, # Energy food gives is calculated by area. after area calculation, this multiplier is applied to result as final energy value of food
+    "FOOD_SPAWN_PER_FRAME_PROBABILITY_DENOMINATOR": 30
+}
 
 # ENVIRONMENT CONFIG
 ENVIRONMENT_CONFIG = {
-    
+    None
+    #TODO
 }
-
-N_STARTING_FOODS = 50
-STARTING_FOOD_IDS = list(string.ascii_letters) + list(string.digits) + list(string.ascii_letters) + list(string.digits)
-
-DEFAULT_FOOD_COLOR = RED
-DEFAULT_FOOD_SIZE = 5 # REFERS TO RADIUS
-
-DEFAULT_FOOD_MULTIPLIER = 4
-ONE_OUT_OF_CHANCE_OF_FOOD_SPAWNING_PER_FRAME = 30
 
 FPS = 30
 
