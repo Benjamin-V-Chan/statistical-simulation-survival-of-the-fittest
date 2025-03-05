@@ -17,6 +17,23 @@ RED = (255, 64, 64)
 GREEN = (64, 255, 64)
 BLUE = (64, 64, 255)
 
+#TODO Eventually make config dicts into jsons that i can extract from
+
+# BLOB CONFIG
+BLOB_CONFIG = {
+    "N_STARTING_BLOBS": 10,
+    
+}
+
+# FOOD CONFIG
+
+
+# ENVIRONMENT CONFIG
+ENVIRONMENT_CONFIG = {
+    
+}
+
+
 N_STARTING_BLOBS = 10
 STARTING_BLOB_IDS = list(string.ascii_letters) + list(string.digits) + list(string.ascii_letters) + list(string.digits)
 
@@ -82,6 +99,16 @@ def collision(obj_a, obj_b): # Both parameters are classes with x, y, and size (
 
 def calculate_circle_area(radius):
     return math.pi * (radius ** 2)
+
+class IDTracker:
+    def __init__(self):
+        self.current_id = 0
+        self.issued_ids = set()
+        
+    def issue_id(self):
+        self.current_id += 1
+        self.issued_ids.add(self.current_id)
+        return self.current_id
 
 class Food:
     def __init__(self, id, color, x, y, size):
@@ -182,6 +209,8 @@ class Blob:
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
 def main():
+    
+    id_tracker = IDTracker()
 
     # will remain static food elements for now. will change over time
     for i in range(N_STARTING_FOODS):
