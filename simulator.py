@@ -66,14 +66,8 @@ ENVIRONMENT_CONFIG = {
     None
     #TODO
 }
-
+    
 FPS = 30
-
-# GLOBAL VARIABLES
-
-# Track assigned IDs
-used_food_ids = set()
-used_blob_ids = set()
 
 # Track all existing foods and blobs
 foods = []
@@ -126,6 +120,9 @@ class IDTracker:
         self.issued_ids.add(self.current_id)
         return self.current_id
 
+food_id_tracker = IDTracker()
+blob_id_tracker = IDTracker()
+
 class Food:
     def __init__(self, id, color, x, y, size):
         self.id = id
@@ -135,7 +132,7 @@ class Food:
         self.color = color
 
         # energy_value calculation (just calculates area of food then scales down by 10 and rounds)
-        self.energy_value = round(DEFAULT_FOOD_MULTIPLIER * math.pi * (size ** 2))
+        self.energy_value = round(FOOD_CONFIG["FOOD_ENERGY_TO_SIZE_MULTIPLIER"] * math.pi * (size ** 2))
 
     def __eq__(self, other):
         if isinstance(other, Food):
@@ -162,7 +159,6 @@ class Blob:
 
         if collision(self, closest_food): # WE ARE TOUCHING FOOD
             self.energy += closest_food.energy_value # consume food and get energy
-            used_food_ids.remove(closest_food.id)
             foods.remove(closest_food) # remove food from ecosystem
 
             self.actions.append("consume food")
@@ -225,28 +221,19 @@ class Blob:
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
 def main():
-    
-    id_tracker = IDTracker()
 
     # will remain static food elements for now. will change over time
-    for i in range(N_STARTING_FOODS):
+    for i in range(SIMULATION_START_CONFIG["N_STARTING_FOODS"]):
 
-        # Ensure a unique food_id is assigned
-        available_ids = [id for id in STARTING_FOOD_IDS if id not in used_food_ids]
+        food_id = food_id_tracker.issue_id()
         
-        if available_ids:  # Ensure IDs are available before proceeding
-            food_id = random.choice(available_ids)  # Select a unique ID
-            used_food_ids.add(food_id)  # Mark it as used
-            
-            food = Food(food_id, 
-                        DEFAULT_FOOD_COLOR, 
-                        random.randint(DEFAULT_FOOD_SIZE, SCREEN_WIDTH - DEFAULT_FOOD_SIZE), 
-                        random.randint(DEFAULT_FOOD_SIZE, SCREEN_HEIGHT - DEFAULT_FOOD_SIZE),
-                        DEFAULT_FOOD_SIZE)
+        food = Food(food_id, 
+                    DEFAULT_FOOD_COLOR,
+                    random.randint(DEFAULT_FOOD_SIZE, SCREEN_WIDTH - DEFAULT_FOOD_SIZE), 
+                    random.randint(DEFAULT_FOOD_SIZE, SCREEN_HEIGHT - DEFAULT_FOOD_SIZE),
+                    DEFAULT_FOOD_SIZE)
 
-            foods.append(food)
-        else:
-            print("[WARNING] No more unique food IDs available!")
+        foods.append(food)
 
     if N_STARTING_BLOBS > len(STARTING_BLOB_IDS):
         print(f"[ERROR] INSUFFICIENT NUMBER OF STARTING IDS TO HANDLE NUMBER OF STARTING BLOBS AMOUNT. MUST BE BELOW {len(STARTING_BLOB_IDS)}")
