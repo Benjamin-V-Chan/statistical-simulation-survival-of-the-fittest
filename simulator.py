@@ -19,10 +19,33 @@ BLUE = (64, 64, 255)
 
 #TODO Eventually make config dicts into jsons that i can extract from
 
+# START CONFIG
+SIMULATION_START_CONFIG = {
+    "N_STARTING_BLOBS": 10,
+    "N_STARTING_FOOD": 50,
+}
+
 # BLOB CONFIG
 BLOB_CONFIG = {
-    "N_STARTING_BLOBS": 10,
-    
+    "BLOB_COLORS": [BLUE, GREEN],
+    "BLOB_SIZE": {
+        "mean": 30,
+        "std_dev": 5,
+        "min": 5,
+        "max": 50
+    },
+    "BLOB_SPEED": {
+        "mean": 30,
+        "std_dev": 5,
+        "min": 5,
+        "max": 50
+    },
+    "BLOB_START_ENERGY": {
+        "mean": 1000,
+        "std_dev": 100,
+        "min": 500,
+        "max": 1500
+    }
 }
 
 # FOOD CONFIG
@@ -32,15 +55,6 @@ BLOB_CONFIG = {
 ENVIRONMENT_CONFIG = {
     
 }
-
-
-N_STARTING_BLOBS = 10
-STARTING_BLOB_IDS = list(string.ascii_letters) + list(string.digits) + list(string.ascii_letters) + list(string.digits)
-
-DEFAULT_BLOB_COLOR = BLUE
-DEFAULT_BLOB_SIZE = 10 # REFERS TO RADIUS
-DEFAULT_BLOB_SPEED = 1
-DEFAULT_BLOB_ENERGY = 1000
 
 N_STARTING_FOODS = 50
 STARTING_FOOD_IDS = list(string.ascii_letters) + list(string.digits) + list(string.ascii_letters) + list(string.digits)
