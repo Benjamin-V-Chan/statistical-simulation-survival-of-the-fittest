@@ -238,7 +238,7 @@ def generate_blob(custom_blob_config=BLOB_CONFIG):
     
     blob_size = generate_normal_stat_with_dict(custom_blob_config["BLOB_SIZE"])
     
-    Blob(
+    return Blob(
         blob_id_tracker.issue_id(),
         random.choice(custom_blob_config["BLOB_COLORS"]), 
         random.randint(blob_size, SCREEN_WIDTH - blob_size),
@@ -248,20 +248,22 @@ def generate_blob(custom_blob_config=BLOB_CONFIG):
         generate_normal_stat_with_dict(custom_blob_config["BLOB_START_ENERGY"])
         )
 
+def generate_food(custom_food_config=FOOD_CONFIG):
+    food_size = generate_normal_stat_with_dict(custom_food_config["FOOD_SIZE"])
+    
+    return Food(
+        food_id_tracker.issue_id(), 
+        random.choice(custom_food_config["FOOD_COLORS"]),
+        random.randint(food_size, SCREEN_WIDTH - food_size), 
+        random.randint(food_size, SCREEN_HEIGHT - food_size),
+        food_size
+        )
+
 def main():
 
     # will remain static food elements for now. will change over time
     for _ in range(SIMULATION_START_CONFIG["N_STARTING_FOODS"]): # Food Creation
-        
-        food_size = generate_normal_stat_with_dict(FOOD_CONFIG["FOOD_SIZE"])
-        
-        food = Food(food_id_tracker.issue_id(), 
-                    random.choice(FOOD_CONFIG["FOOD_COLORS"]),
-                    random.randint(food_size, SCREEN_WIDTH - food_size), 
-                    random.randint(food_size, SCREEN_HEIGHT - food_size),
-                    food_size)
-
-        foods.append(food)
+        foods.append(generate_food())
 
     for _ in range(SIMULATION_START_CONFIG["N_STARTING_BLOBS"]): # Blob Creation        
         blobs.append(generate_blob())
