@@ -217,6 +217,18 @@ class Blob:
         ========================
 
         ''')
+        
+    def retrieve_stats(self):
+        return {
+            'id': {self.id},
+            'color': {self.color},
+            'x': {self.x},
+            'y': {self.y},
+            'size': {self.size},
+            'speed': {self.speed},
+            'energy': {self.energy},
+            'actions': {self.actions}
+        }
 
     def __eq__(self, other):
         if isinstance(other, Blob):
@@ -278,20 +290,7 @@ def main():
 
         # CHANCE OF FOOD SPAWNING
         if random.randint(1, FOOD_CONFIG["FOOD_SPAWN_PER_FRAME_PROBABILITY_DENOMINATOR"]) == 1:
-            # Ensure a unique food_id is assigned
-            available_ids = [id for id in STARTING_FOOD_IDS if id not in used_food_ids]
-            
-            if available_ids:  # Ensure IDs are available before proceeding
-                food_id = random.choice(available_ids)  # Select a unique ID
-                used_food_ids.add(food_id)  # Mark it as used
-                
-                food = Food(food_id, 
-                            DEFAULT_FOOD_COLOR, 
-                            random.randint(DEFAULT_FOOD_SIZE, SCREEN_WIDTH - DEFAULT_FOOD_SIZE), 
-                            random.randint(DEFAULT_FOOD_SIZE, SCREEN_HEIGHT - DEFAULT_FOOD_SIZE),
-                            DEFAULT_FOOD_SIZE)
-
-                foods.append(food)
+            foods.append(generate_food())
 
         for food in foods:
             food.draw()
