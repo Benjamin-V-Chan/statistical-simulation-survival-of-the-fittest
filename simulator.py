@@ -234,6 +234,20 @@ def generate_normal_stat_with_dict(stat_dict):
         stat_dict['max']
     )
 
+def generate_blob(custom_blob_config=BLOB_CONFIG):
+    
+    blob_size = generate_normal_stat_with_dict(custom_blob_config["BLOB_SIZE"])
+    
+    Blob(
+        blob_id_tracker.issue_id(),
+        random.choice(custom_blob_config["BLOB_COLORS"]), 
+        random.randint(blob_size, SCREEN_WIDTH - blob_size),
+        random.randint(blob_size, SCREEN_HEIGHT - blob_size),
+        blob_size,
+        generate_normal_stat_with_dict(custom_blob_config["BLOB_SPEED"]),
+        generate_normal_stat_with_dict(custom_blob_config["BLOB_START_ENERGY"])
+        )
+
 def main():
 
     # will remain static food elements for now. will change over time
@@ -249,21 +263,8 @@ def main():
 
         foods.append(food)
 
-    for _ in range(SIMULATION_START_CONFIG["N_STARTING_BLOBS"]): # Blob Creation
-        
-        blob_size = generate_normal_stat_with_dict(BLOB_CONFIG["BLOB_SIZE"])
-
-        blob = Blob(
-            blob_id_tracker.issue_id(),
-            random.choice(BLOB_CONFIG["BLOB_COLORS"]), 
-            random.randint(blob_size, SCREEN_WIDTH - blob_size),
-            random.randint(blob_size, SCREEN_HEIGHT - blob_size),
-            blob_size,
-            generate_normal_stat_with_dict(BLOB_CONFIG["BLOB_SPEED"]),
-            generate_normal_stat_with_dict(BLOB_CONFIG["BLOB_START_ENERGY"])
-        )
-        
-        blobs.append(blob)
+    for _ in range(SIMULATION_START_CONFIG["N_STARTING_BLOBS"]): # Blob Creation        
+        blobs.append(generate_blob())
 
     running = True
     while running:
@@ -289,8 +290,6 @@ def main():
                             DEFAULT_FOOD_SIZE)
 
                 foods.append(food)
-            else:
-                print("[WARNING] No more unique food IDs available!")
 
         for food in foods:
             food.draw()
