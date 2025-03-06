@@ -241,29 +241,41 @@ def main():
 
         foods.append(food)
 
-    if N_STARTING_BLOBS > len(STARTING_BLOB_IDS):
-        print(f"[ERROR] INSUFFICIENT NUMBER OF STARTING IDS TO HANDLE NUMBER OF STARTING BLOBS AMOUNT. MUST BE BELOW {len(STARTING_BLOB_IDS)}")
-        return
-
-    for i in range(N_STARTING_BLOBS):
-
-        # Ensure a unique food_id is assigned
-        available_ids = [id for id in STARTING_BLOB_IDS if id not in used_blob_ids]
+    for _ in range(SIMULATION_START_CONFIG["N_STARTING_BLOBS"]): # Blob Creation
         
-        if available_ids:  # Ensure IDs are available before proceeding
-            blob_id = random.choice(available_ids)  # Select a unique ID
-            used_blob_ids.add(blob_id)  # Mark it as used
+        blob_size = generate_normal_stat(
+            BLOB_CONFIG['BLOB_SIZE']['mean'], 
+            BLOB_CONFIG['BLOB_SIZE']['std_dev'], 
+            BLOB_CONFIG['BLOB_SIZE']['min'], 
+            BLOB_CONFIG['BLOB_SIZE']['max']
+            )
+        
+        blob_speed = generate_normal_stat(
+            BLOB_CONFIG['BLOB_SPEED']['mean'], 
+            BLOB_CONFIG['BLOB_SPEED']['std_dev'], 
+            BLOB_CONFIG['BLOB_SPEED']['min'], 
+            BLOB_CONFIG['BLOB_SPEED']['max']
+            )
+        
+        blob_start_energy = generate_normal_stat(
+            BLOB_CONFIG['BLOB_START_ENERGY']['mean'], 
+            BLOB_CONFIG['BLOB_START_ENERGY']['std_dev'], 
+            BLOB_CONFIG['BLOB_START_ENERGY']['min'], 
+            BLOB_CONFIG['BLOB_START_ENERGY']['max']
+            )
 
-            blob_id = STARTING_BLOB_IDS[i]
-            blob = Blob(blob_id, 
-                        DEFAULT_BLOB_COLOR, 
-                        random.randint(DEFAULT_BLOB_SIZE, SCREEN_WIDTH - DEFAULT_BLOB_SIZE),
-                        random.randint(DEFAULT_BLOB_SIZE, SCREEN_HEIGHT - DEFAULT_BLOB_SIZE),
-                        DEFAULT_BLOB_SIZE,
-                        DEFAULT_BLOB_SPEED,
-                        DEFAULT_BLOB_ENERGY)
 
-            blobs.append(blob)
+        blob = Blob(
+            blob_id_tracker.issue_id(),
+            random.choice(BLOB_CONFIG["BLOB_COLORS"]), 
+            random.randint(blob_size, SCREEN_WIDTH - blob_size),
+            random.randint(blob_size, SCREEN_HEIGHT - blob_size),
+            blob_size,
+            blob_speed,
+            blob_start_energy
+        )
+        
+        blobs.append(blob)
 
     running = True
     while running:
