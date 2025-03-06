@@ -226,12 +226,20 @@ class Blob:
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
+def generate_normal_stat_with_dict(stat_dict):
+    return generate_normal_stat(
+        stat_dict['mean'],
+        stat_dict['std_dev'],
+        stat_dict['min'],
+        stat_dict['max']
+    )
+
 def main():
 
     # will remain static food elements for now. will change over time
-    for i in range(SIMULATION_START_CONFIG["N_STARTING_FOODS"]): # Food Creation
+    for _ in range(SIMULATION_START_CONFIG["N_STARTING_FOODS"]): # Food Creation
         
-        food_size = generate_normal_stat(FOOD_CONFIG["FOOD_SIZE"]["mean"], FOOD_CONFIG["FOOD_SIZE"]["std_dev"],FOOD_CONFIG["FOOD_SIZE"]["min"],FOOD_CONFIG["FOOD_SIZE"]["max"])
+        food_size = generate_normal_stat_with_dict(FOOD_CONFIG["FOOD_SIZE"])
         
         food = Food(food_id_tracker.issue_id(), 
                     random.choice(FOOD_CONFIG["FOOD_COLORS"]),
@@ -243,27 +251,7 @@ def main():
 
     for _ in range(SIMULATION_START_CONFIG["N_STARTING_BLOBS"]): # Blob Creation
         
-        blob_size = generate_normal_stat(
-            BLOB_CONFIG['BLOB_SIZE']['mean'], 
-            BLOB_CONFIG['BLOB_SIZE']['std_dev'], 
-            BLOB_CONFIG['BLOB_SIZE']['min'], 
-            BLOB_CONFIG['BLOB_SIZE']['max']
-            )
-        
-        blob_speed = generate_normal_stat(
-            BLOB_CONFIG['BLOB_SPEED']['mean'], 
-            BLOB_CONFIG['BLOB_SPEED']['std_dev'], 
-            BLOB_CONFIG['BLOB_SPEED']['min'], 
-            BLOB_CONFIG['BLOB_SPEED']['max']
-            )
-        
-        blob_start_energy = generate_normal_stat(
-            BLOB_CONFIG['BLOB_START_ENERGY']['mean'], 
-            BLOB_CONFIG['BLOB_START_ENERGY']['std_dev'], 
-            BLOB_CONFIG['BLOB_START_ENERGY']['min'], 
-            BLOB_CONFIG['BLOB_START_ENERGY']['max']
-            )
-
+        blob_size = generate_normal_stat_with_dict(BLOB_CONFIG["BLOB_SIZE"])
 
         blob = Blob(
             blob_id_tracker.issue_id(),
@@ -271,8 +259,8 @@ def main():
             random.randint(blob_size, SCREEN_WIDTH - blob_size),
             random.randint(blob_size, SCREEN_HEIGHT - blob_size),
             blob_size,
-            blob_speed,
-            blob_start_energy
+            generate_normal_stat_with_dict(BLOB_CONFIG["BLOB_SPEED"]),
+            generate_normal_stat_with_dict(BLOB_CONFIG["BLOB_START_ENERGY"])
         )
         
         blobs.append(blob)
@@ -286,7 +274,7 @@ def main():
         screen.fill(BLACK)
 
         # CHANCE OF FOOD SPAWNING
-        if random.randint(1, ONE_OUT_OF_CHANCE_OF_FOOD_SPAWNING_PER_FRAME) == 1:
+        if random.randint(1, FOOD_CONFIG["FOOD_SPAWN_PER_FRAME_PROBABILITY_DENOMINATOR"]) == 1:
             # Ensure a unique food_id is assigned
             available_ids = [id for id in STARTING_FOOD_IDS if id not in used_food_ids]
             
