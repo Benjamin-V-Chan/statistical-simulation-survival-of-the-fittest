@@ -140,6 +140,19 @@ class Food:
         # energy_value calculation (just calculates area of food then scales down by 10 and rounds)
         self.energy_value = round(FOOD_CONFIG["FOOD_ENERGY_TO_SIZE_MULTIPLIER"] * math.pi * (size ** 2))
         
+    def print_stats(self):
+        print(f'''
+
+        ====== FOOD STATS ======
+        id: {self.id}
+        color: {self.color}
+        x: {self.x}
+        y: {self.y}
+        size: {self.size}
+        ========================
+
+        ''')
+        
     def retrieve_stats(self):
         return {
             'id': {self.id},
