@@ -139,7 +139,16 @@ class Food:
 
         # energy_value calculation (just calculates area of food then scales down by 10 and rounds)
         self.energy_value = round(FOOD_CONFIG["FOOD_ENERGY_TO_SIZE_MULTIPLIER"] * math.pi * (size ** 2))
-
+        
+    def retrieve_stats(self):
+        return {
+            'id': {self.id},
+            'color': {self.color},
+            'x': {self.x},
+            'y': {self.y},
+            'size': {self.size}
+        }
+        
     def __eq__(self, other):
         if isinstance(other, Food):
             return self.id == other.id
