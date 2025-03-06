@@ -1,7 +1,7 @@
-import string
 import pygame
 import random
 import math
+import numpy as np
 
 pygame.init()
 
@@ -120,6 +120,12 @@ class IDTracker:
         self.issued_ids.add(self.current_id)
         return self.current_id
 
+def generate_normal_stat(mean, std_dev, min, max):
+    generated_stat = np.random.normal(mean, std_dev)
+    while min < generated_stat < max:
+        generated_stat = np.random.normal(mean, std_dev)
+    return generated_stat
+
 food_id_tracker = IDTracker()
 blob_id_tracker = IDTracker()
 
@@ -223,15 +229,15 @@ class Blob:
 def main():
 
     # will remain static food elements for now. will change over time
-    for i in range(SIMULATION_START_CONFIG["N_STARTING_FOODS"]):
-
-        food_id = food_id_tracker.issue_id()
+    for i in range(SIMULATION_START_CONFIG["N_STARTING_FOODS"]): # Food Creation
         
-        food = Food(food_id, 
-                    DEFAULT_FOOD_COLOR,
-                    random.randint(DEFAULT_FOOD_SIZE, SCREEN_WIDTH - DEFAULT_FOOD_SIZE), 
-                    random.randint(DEFAULT_FOOD_SIZE, SCREEN_HEIGHT - DEFAULT_FOOD_SIZE),
-                    DEFAULT_FOOD_SIZE)
+        food_size = generate_normal_stat(FOOD_CONFIG["FOOD_SIZE"]["mean"], FOOD_CONFIG["FOOD_SIZE"]["std_dev"],FOOD_CONFIG["FOOD_SIZE"]["min"],FOOD_CONFIG["FOOD_SIZE"]["max"])
+        
+        food = Food(food_id_tracker.issue_id(), 
+                    random.choice(FOOD_CONFIG["FOOD_COLORS"]),
+                    random.randint(food_size, SCREEN_WIDTH - food_size), 
+                    random.randint(food_size, SCREEN_HEIGHT - food_size),
+                    food_size)
 
         foods.append(food)
 
