@@ -76,16 +76,20 @@ blobs = []
 
 # HELPER FUNCTIONS
 
-def get_radius_endpoint(x, y, radius, theta): # Finds cords (x, y) of radius endpoint of a circle, based off center point cords (x, y), the radius distance, and theta (angle, in radians)
+def get_radius_endpoint(x, y, radius, theta):
+    '''Returns coordinates (x, y) of radius endpoint of a circle, based off center point cords (x, y), the radius distance, and theta (angle, in radians)'''
     return (x + radius * math.cos(theta), y + radius * math.sin(theta))
 
-def get_distance(x1, y1, x2, y2): # distance between both cords (x, y)
+def get_distance(x1, y1, x2, y2):
+    '''Returns distance between two sets of (x, y) coordinates'''
     return math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
 
-def get_theta(x1, y1, x2, y2): # find theta (in radians) that (x1, y1) needs to direct itself to point towards (x2, y2)
+def get_theta(x1, y1, x2, y2): 
+    '''Returns theta (in radians) that (x1, y1) needs to direct itself to point towards (x2, y2)'''
     return math.atan2(y2 - y1, x2 - x1)
 
-def find_closest_obj(obj_a, list_of_objects): # obj_a and all objects within list_of_objects parameters are classes with x and y attributes
+def find_closest_obj(obj_a, list_of_objects):
+    '''Returns closest obj to obj_a from a list of objs in list_of_objects, assuming all objs have x and y attributes'''
     
     if len(list_of_objects) <= 1:
         print("[WARNING] ONE OBJ LEFT: FIND_CLOSEST_OBJ")
@@ -101,15 +105,61 @@ def find_closest_obj(obj_a, list_of_objects): # obj_a and all objects within lis
 
     return closest_obj
 
-def collision(obj_a, obj_b): # Both parameters are classes with x, y, and size (radius) attributes
+def collision(obj_a, obj_b):
+    '''Returns True if circle objects, obj_a and obj_b, collide with one another, assuming they both have x, y, and size (radius) attributes'''
     distance = get_distance(obj_a.x, obj_a.y, obj_b.x, obj_b.y)
     if distance <= obj_a.size + obj_b.size:
         return True
     return False
 
 def calculate_circle_area(radius):
+    '''Returns circle area in same units as radius is in'''
     return math.pi * (radius ** 2)
 
+def generate_normal_stat(mean, std_dev, min, max):
+    '''Returns a random statistic based off predetermined normal distribution parameters as well as min and max value boundaries'''
+    generated_stat = np.random.normal(mean, std_dev)
+    while min < generated_stat < max:
+        generated_stat = np.random.normal(mean, std_dev)
+    return generated_stat
+
+def generate_normal_stat_with_dict(stat_dict):
+    '''Returns a random statistic based off predetermined normal distribution parameters from a config dictionary. Config dictionary must have 'mean', 'std_dev', 'min', and 'max' keys.'''
+    return generate_normal_stat(
+        stat_dict['mean'],
+        stat_dict['std_dev'],
+        stat_dict['min'],
+        stat_dict['max']
+    )
+
+def generate_blob(custom_blob_config=BLOB_CONFIG):
+    '''Returns a Blob object of Class Blob based off (optional) dictionary config (else, defaults to global config, BLOB_CONFIG)'''
+    
+    blob_size = generate_normal_stat_with_dict(custom_blob_config["BLOB_SIZE"])
+    
+    return Blob(
+        blob_id_tracker.issue_id(),
+        random.choice(custom_blob_config["BLOB_COLORS"]), 
+        random.randint(blob_size, SCREEN_WIDTH - blob_size),
+        random.randint(blob_size, SCREEN_HEIGHT - blob_size),
+        blob_size,
+        generate_normal_stat_with_dict(custom_blob_config["BLOB_SPEED"]),
+        generate_normal_stat_with_dict(custom_blob_config["BLOB_START_ENERGY"])
+        )
+
+def generate_food(custom_food_config=FOOD_CONFIG):
+    '''Returns a Food object of Class Food based off (optional) dictionary config (else, defaults to global config, FOOD_CONFIG)'''
+
+    food_size = generate_normal_stat_with_dict(custom_food_config["FOOD_SIZE"])
+    
+    return Food(
+        food_id_tracker.issue_id(), 
+        random.choice(custom_food_config["FOOD_COLORS"]),
+        random.randint(food_size, SCREEN_WIDTH - food_size), 
+        random.randint(food_size, SCREEN_HEIGHT - food_size),
+        food_size
+        )
+    
 class IDTracker:
     def __init__(self):
         self.current_id = 0
@@ -119,12 +169,6 @@ class IDTracker:
         self.current_id += 1
         self.issued_ids.add(self.current_id)
         return self.current_id
-
-def generate_normal_stat(mean, std_dev, min, max):
-    generated_stat = np.random.normal(mean, std_dev)
-    while min < generated_stat < max:
-        generated_stat = np.random.normal(mean, std_dev)
-    return generated_stat
 
 food_id_tracker = IDTracker()
 blob_id_tracker = IDTracker()
@@ -139,7 +183,7 @@ class Food:
 
         # energy_value calculation (just calculates area of food then scales down by 10 and rounds)
         self.energy_value = round(FOOD_CONFIG["FOOD_ENERGY_TO_SIZE_MULTIPLIER"] * math.pi * (size ** 2))
-        
+
     def print_stats(self):
         print(f'''
 
@@ -152,7 +196,7 @@ class Food:
         ========================
 
         ''')
-        
+
     def retrieve_stats(self):
         return {
             'id': {self.id},
@@ -161,7 +205,7 @@ class Food:
             'y': {self.y},
             'size': {self.size}
         }
-        
+
     def __eq__(self, other):
         if isinstance(other, Food):
             return self.id == other.id
@@ -259,39 +303,6 @@ class Blob:
     
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
-
-def generate_normal_stat_with_dict(stat_dict):
-    return generate_normal_stat(
-        stat_dict['mean'],
-        stat_dict['std_dev'],
-        stat_dict['min'],
-        stat_dict['max']
-    )
-
-def generate_blob(custom_blob_config=BLOB_CONFIG):
-    
-    blob_size = generate_normal_stat_with_dict(custom_blob_config["BLOB_SIZE"])
-    
-    return Blob(
-        blob_id_tracker.issue_id(),
-        random.choice(custom_blob_config["BLOB_COLORS"]), 
-        random.randint(blob_size, SCREEN_WIDTH - blob_size),
-        random.randint(blob_size, SCREEN_HEIGHT - blob_size),
-        blob_size,
-        generate_normal_stat_with_dict(custom_blob_config["BLOB_SPEED"]),
-        generate_normal_stat_with_dict(custom_blob_config["BLOB_START_ENERGY"])
-        )
-
-def generate_food(custom_food_config=FOOD_CONFIG):
-    food_size = generate_normal_stat_with_dict(custom_food_config["FOOD_SIZE"])
-    
-    return Food(
-        food_id_tracker.issue_id(), 
-        random.choice(custom_food_config["FOOD_COLORS"]),
-        random.randint(food_size, SCREEN_WIDTH - food_size), 
-        random.randint(food_size, SCREEN_HEIGHT - food_size),
-        food_size
-        )
 
 def main():
 
