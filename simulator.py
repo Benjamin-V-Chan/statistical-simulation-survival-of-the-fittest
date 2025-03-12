@@ -22,7 +22,7 @@ BLUE = (64, 64, 255)
 
 # START CONFIG
 SIMULATION_START_CONFIG = {
-    "N_STARTING_BLOB": 30,
+    "N_STARTING_BLOB": 10,
     "N_STARTING_FOOD": 50
 }
 
@@ -82,7 +82,7 @@ FOOD_CONFIG = {
         "max": 7
     },
     "FOOD_ENERGY_TO_SIZE_MULTIPLIER": 6, # Energy food gives is calculated by area. after area calculation, this multiplier is applied to result as final energy value of food
-    "FOOD_SPAWN_PER_FRAME_PROBABILITY_DENOMINATOR": 3
+    "FOOD_SPAWN_CHANCE_PER_FRAME": 0.6
 }
 
 # ENVIRONMENT CONFIG
@@ -156,22 +156,53 @@ def generate_normal_stat_with_dict(stat_dict):
         stat_dict['max']
     )
 
-def generate_blob(custom_blob_config=BLOB_CONFIG):
-    '''Returns a Blob object of Class Blob based off (optional) dictionary config (else, defaults to global config, BLOB_CONFIG), and custom_attributes dictionary config (else, defaults to None)'''
+def mutate_attribute(value, attribute_dict):
+    """
+    Applies mutation to an attribute based on a probability.
+    If mutation occurs, generates a new value within the defined range.
+    """
+    if random.random() < BLOB_CONFIG["BLOB_REPRODUCTION"]["mutation_chance"]:
+        return generate_normal_stat_with_dict(attribute_dict)
+    return value
 
+def generate_blob(custom_blob_config=BLOB_CONFIG, parent_blob=None):
+    """
+    Generates a new Blob. If a parent_blob is provided, it inherits traits with possible mutations.
+    """
     blob_size = generate_normal_stat_with_dict(custom_blob_config["BLOB_SIZE"])
     
+    if parent_blob:
+        # Copy attributes from parent and apply mutations
+        offspring_attributes = {
+            "size": mutate_attribute(parent_blob.size, BLOB_CONFIG["BLOB_SIZE"]),
+            "speed": mutate_attribute(parent_blob.speed, BLOB_CONFIG["BLOB_SPEED"]),
+            "required_reproduction_energy": mutate_attribute(parent_blob.required_reproduction_energy, 
+                                                             BLOB_CONFIG["BLOB_REPRODUCTION"]["required_energy"]),
+            "offspring_amount": mutate_attribute(parent_blob.offspring_amount, BLOB_CONFIG["BLOB_REPRODUCTION"]["offspring_amount"]),
+            "energy": BLOB_CONFIG["BLOB_START_ENERGY"]["mean"],  # Reset energy for new blobs
+        }
+        
+    else:
+        # Normal new blob generation
+        offspring_attributes = {
+            "size": blob_size,
+            "speed": generate_normal_stat_with_dict(custom_blob_config["BLOB_SPEED"]),
+            "required_reproduction_energy": generate_normal_stat_with_dict(custom_blob_config["BLOB_REPRODUCTION"]["required_energy"]),
+            "offspring_amount": generate_normal_stat_with_dict(custom_blob_config["BLOB_REPRODUCTION"]["offspring_amount"]),
+            "energy": generate_normal_stat_with_dict(custom_blob_config["BLOB_START_ENERGY"])
+        }
+
     return Blob(
         blob_id_tracker.issue_id(),
-        random.choice(custom_blob_config["BLOB_COLORS"]), 
+        random.choice(custom_blob_config["BLOB_COLORS"]),
         random.randint(blob_size, SCREEN_WIDTH - blob_size),
         random.randint(blob_size, SCREEN_HEIGHT - blob_size),
-        generate_normal_stat_with_dict(custom_blob_config["BLOB_REPRODUCTION"]["required_energy"]),
-        generate_normal_stat_with_dict(custom_blob_config["BLOB_REPRODUCTION"]["offspring_amount"]),
-        blob_size,
-        generate_normal_stat_with_dict(custom_blob_config["BLOB_SPEED"]),
-        generate_normal_stat_with_dict(custom_blob_config["BLOB_START_ENERGY"])
-        )
+        offspring_attributes["required_reproduction_energy"],
+        offspring_attributes["offspring_amount"],
+        offspring_attributes["size"],
+        offspring_attributes["speed"],
+        offspring_attributes["energy"]
+    )
 
 def generate_food(custom_food_config=FOOD_CONFIG):
     '''Returns a Food object of Class Food based off (optional) dictionary config (else, defaults to global config, FOOD_CONFIG)'''
@@ -190,7 +221,7 @@ class IDTracker:
     def __init__(self):
         self.current_id = 0
         self.issued_ids = set()
-        
+
     def issue_id(self):
         self.current_id += 1
         self.issued_ids.add(self.current_id)
@@ -241,7 +272,7 @@ class Food:
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
 class Blob:
-    def __init__(self, id, color, x, y, required_reproduction_energy, offspring_amount, size, speed, energy, start_energy):
+    def __init__(self, id, color, x, y, required_reproduction_energy, offspring_amount, size, speed, energy):
         self.id = id
         self.color = color
         self.x = x
@@ -251,11 +282,10 @@ class Blob:
         self.size = size
         self.speed = speed
         self.energy = energy
-        self.start_energy = start_energy
         self.actions = []
 
     def food_action(self, foods):
-        
+
         closest_food = find_closest_obj(self, foods) # Find closest food obj out of list of food objects
 
         if collision(self, closest_food): # WE ARE TOUCHING FOOD
@@ -292,18 +322,20 @@ class Blob:
         self.energy -= energy_used
 
         self.actions.append("constant energy")
-    blob_size = generate_normal_stat_with_dict(custom_blob_config["BLOB_SIZE"])
 
     def reproduce(self):
+        """
+        Handles reproduction by generating offspring blobs with possible mutations.
+        The parent blob loses the required reproduction energy.
+        """
         self.energy -= self.required_reproduction_energy
-        if random.random() < BLOB_CONFIG["BLOB_REPRODUCTION"]["mutation_chance"]: # Mutation occurs
-            pass
-            generate_blob(self.attribute_dict)
-        # duplicate blob
-        # apply BLOB_CONFIG mutation chance
-        # use generate normal stat to "reproduce" with a mutation
-        # create new blob and append to main list
-        
+
+        offspring_list = []
+        for _ in range(self.offspring_amount):
+            offspring_list.append(generate_blob(parent_blob=self))
+
+        return offspring_list
+
     def print_stats(self, show_actions=True):
         actions = "'show_actions' TURNED OFF"
         if show_actions:
@@ -362,21 +394,25 @@ def main():
         screen.fill(BLACK)
 
         # CHANCE OF FOOD SPAWNING
-        if random.randint(1, FOOD_CONFIG["FOOD_SPAWN_PER_FRAME_PROBABILITY_DENOMINATOR"]) == 1:
+        if random.random() < FOOD_CONFIG["FOOD_SPAWN_CHANCE_PER_FRAME"]:
             foods.append(generate_food())
-
+            
         for food in foods:
             food.draw()
-        
+            
         random.shuffle(blobs) # Shuffle to ensure fairness and equal chance for best order
         for blob in blobs:
             blob.use_constant_energy()
             blob.food_action(foods)
+            
             if blob.energy <= 0: # Blob no longer has energy, so it will perish
                 blobs.remove(blob)
                 blob.color = WHITE # Change color to show it will die
+            
             elif blob.energy >= blob.required_reproduction_energy + BLOB_CONFIG["BLOB_REPRODUCTION"]["excess_energy_required"]:
-                blob.reproduce()
+                offspring = blob.reproduce()
+                blobs.extend(offspring)
+                
             # blob.print_stats(show_actions=False)
             blob.draw()
 
