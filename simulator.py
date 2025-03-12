@@ -275,6 +275,12 @@ class Blob:
 
         self.actions.append("constant energy")
 
+    def reproduce(self):
+        # duplicate blob
+        # apply BLOB_CONFIG mutation chance
+        # use generate normal stat to "reproduce" with a mutation
+        # create new blob and append to main list
+        
     def print_stats(self, show_actions=True):
         actions = "'show_actions' TURNED OFF"
         if show_actions:
@@ -346,6 +352,8 @@ def main():
             if blob.energy <= 0: # Blob no longer has energy, so it will perish
                 blobs.remove(blob)
                 blob.color = WHITE # Change color to show it will die
+            elif blob.energy >= blob.required_reproduction_energy:
+                blob.reproduce()
             # blob.print_stats(show_actions=False)
             blob.draw()
 
