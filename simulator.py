@@ -37,7 +37,14 @@ BLOB_CONFIG = {
             "min": 4500,
             "max": 5500
         },
+        "excess_energy_required": 100, # Extra energy required on top of required_energy for blob to reproduce. Ensures Blob doesn't immediately die after reproduction.
         "mutation_chance": 0.1, # Will use base std_devs from base stat as the std_devs for the normal distribution
+        "offspring_amount": {
+            "mean": 1,
+            "std_dev": 0.5,
+            "min": 1,
+            "max": 3
+        }
     },
     "BLOB_SIZE": {
         "mean": 20,
@@ -65,8 +72,8 @@ FOOD_CONFIG = {
     "FOOD_SIZE": {
         "mean": 5,
         "std_dev": 1,
-        "min": 1,
-        "max": 10
+        "min": 3,
+        "max": 7
     },
     "FOOD_ENERGY_TO_SIZE_MULTIPLIER": 6, # Energy food gives is calculated by area. after area calculation, this multiplier is applied to result as final energy value of food
     "FOOD_SPAWN_PER_FRAME_PROBABILITY_DENOMINATOR": 3
@@ -130,7 +137,7 @@ def calculate_circle_area(radius):
 def generate_normal_stat(mean, std_dev, min, max):
     '''Returns a random statistic based off predetermined normal distribution parameters as well as min and max value boundaries'''
     generated_stat = np.random.normal(mean, std_dev)
-    while not (min < generated_stat < max):
+    while not (min <= generated_stat <= max):
         generated_stat = np.random.normal(mean, std_dev)
     return int(generated_stat)
 
@@ -153,6 +160,8 @@ def generate_blob(custom_blob_config=BLOB_CONFIG):
         random.choice(custom_blob_config["BLOB_COLORS"]), 
         random.randint(blob_size, SCREEN_WIDTH - blob_size),
         random.randint(blob_size, SCREEN_HEIGHT - blob_size),
+        generate_normal_stat_with_dict(custom_blob_config["BLOB_REPRODUCTION"]["required_energy"]),
+        generate_normal_stat_with_dict(custom_blob_config["BLOB_REPRODUCTION"]["offspring_amount"]),
         blob_size,
         generate_normal_stat_with_dict(custom_blob_config["BLOB_SPEED"]),
         generate_normal_stat_with_dict(custom_blob_config["BLOB_START_ENERGY"])
@@ -226,11 +235,13 @@ class Food:
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
 class Blob:
-    def __init__(self, id, color, x, y, size, speed, energy):
+    def __init__(self, id, color, x, y, required_reproduction_energy, offspring_amount, size, speed, energy):
         self.id = id
         self.color = color
         self.x = x
         self.y = y
+        self.required_reproduction_energy = required_reproduction_energy
+        self.offspring_amount = offspring_amount
         self.size = size
         self.speed = speed
         self.energy = energy
@@ -352,7 +363,7 @@ def main():
             if blob.energy <= 0: # Blob no longer has energy, so it will perish
                 blobs.remove(blob)
                 blob.color = WHITE # Change color to show it will die
-            elif blob.energy >= blob.required_reproduction_energy:
+            elif blob.energy >= blob.required_reproduction_energy + BLOB_CONFIG["BLOB_REPRODUCTION"]["excess_energy_required"]:
                 blob.reproduce()
             # blob.print_stats(show_actions=False)
             blob.draw()
