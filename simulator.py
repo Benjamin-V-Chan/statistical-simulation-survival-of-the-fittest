@@ -22,30 +22,30 @@ BLUE = (64, 64, 255)
 
 # START CONFIG
 SIMULATION_START_CONFIG = {
-    "N_STARTING_BLOB": 10,
+    "N_STARTING_BLOB": 30,
     "N_STARTING_FOOD": 50,
 }
 
 # BLOB CONFIG
 BLOB_CONFIG = {
-    "BLOB_COLORS": [BLUE, GREEN],
+    "BLOB_COLORS": [BLUE],
     "BLOB_SIZE": {
-        "mean": 30,
-        "std_dev": 5,
-        "min": 5,
-        "max": 50
+        "mean": 20,
+        "std_dev": 3,
+        "min": 10,
+        "max": 30
     },
     "BLOB_SPEED": {
-        "mean": 30,
-        "std_dev": 5,
-        "min": 5,
-        "max": 50
+        "mean": 3,
+        "std_dev": 0,
+        "min": 2,
+        "max": 4
     },
     "BLOB_START_ENERGY": {
-        "mean": 1000,
-        "std_dev": 100,
-        "min": 500,
-        "max": 1500
+        "mean": 3000,
+        "std_dev": 200,
+        "min": 2000,
+        "max": 4000
     }
 }
 
@@ -53,13 +53,13 @@ BLOB_CONFIG = {
 FOOD_CONFIG = {
     "FOOD_COLORS": [RED],
     "FOOD_SIZE": {
-        "mean": 30,
-        "std_dev": 5,
-        "min": 5,
-        "max": 50
+        "mean": 5,
+        "std_dev": 1,
+        "min": 1,
+        "max": 10
     },
-    "FOOD_ENERGY_TO_SIZE_MULTIPLIER": 4, # Energy food gives is calculated by area. after area calculation, this multiplier is applied to result as final energy value of food
-    "FOOD_SPAWN_PER_FRAME_PROBABILITY_DENOMINATOR": 30
+    "FOOD_ENERGY_TO_SIZE_MULTIPLIER": 6, # Energy food gives is calculated by area. after area calculation, this multiplier is applied to result as final energy value of food
+    "FOOD_SPAWN_PER_FRAME_PROBABILITY_DENOMINATOR": 3
 }
 
 # ENVIRONMENT CONFIG
@@ -120,7 +120,7 @@ def calculate_circle_area(radius):
 def generate_normal_stat(mean, std_dev, min, max):
     '''Returns a random statistic based off predetermined normal distribution parameters as well as min and max value boundaries'''
     generated_stat = np.random.normal(mean, std_dev)
-    while min < generated_stat < max:
+    while not (min < generated_stat < max):
         generated_stat = np.random.normal(mean, std_dev)
     return int(generated_stat)
 
@@ -136,12 +136,8 @@ def generate_normal_stat_with_dict(stat_dict):
 def generate_blob(custom_blob_config=BLOB_CONFIG):
     '''Returns a Blob object of Class Blob based off (optional) dictionary config (else, defaults to global config, BLOB_CONFIG)'''
 
-    print(datetime.now())
-    print("generating blob!")
     blob_size = generate_normal_stat_with_dict(custom_blob_config["BLOB_SIZE"])
     
-    print(datetime.now())
-    print("blob_size generated!")
     return Blob(
         blob_id_tracker.issue_id(),
         random.choice(custom_blob_config["BLOB_COLORS"]), 
@@ -217,7 +213,6 @@ class Food:
         return False
 
     def draw(self):
-        print('food')
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
 class Blob:
@@ -308,7 +303,6 @@ class Blob:
         return False
     
     def draw(self):
-        print('blob')
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
 def main():
@@ -316,19 +310,10 @@ def main():
     # will remain static food elements for now. will change over time
     for _ in range(SIMULATION_START_CONFIG["N_STARTING_FOOD"]): # Food Creation
         foods.append(generate_food())
-        print(len(foods))
 
     for _ in range(SIMULATION_START_CONFIG["N_STARTING_BLOB"]): # Blob Creation        
-        print(datetime.now())
-        print("blob generating...")
-        
         blobs.append(generate_blob())
         
-        print(datetime.now())
-        print("blob generated!")
-        
-        print(len(blobs))
-
     running = True
     while running:
         for event in pygame.event.get():
@@ -346,7 +331,6 @@ def main():
         
         random.shuffle(blobs) # Shuffle to ensure fairness and equal chance for best order
         for blob in blobs:
-            print('blob cycle')
             blob.use_constant_energy()
             blob.food_action(foods)
             if blob.energy <= 0: # Blob no longer has energy, so it will perish
