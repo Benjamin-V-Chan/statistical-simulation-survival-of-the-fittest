@@ -23,12 +23,22 @@ BLUE = (64, 64, 255)
 # START CONFIG
 SIMULATION_START_CONFIG = {
     "N_STARTING_BLOB": 30,
-    "N_STARTING_FOOD": 50,
+    "N_STARTING_FOOD": 50
 }
 
 # BLOB CONFIG
 BLOB_CONFIG = {
     "BLOB_COLORS": [BLUE],
+    "BLOB_MUTATION_CHANCE": 0.1,
+    "BLOB_REPRODUCTION": {
+        "required_energy": {
+            "mean": 5000,
+            "std_dev": 150,
+            "min": 4500,
+            "max": 5500
+        },
+        "mutation_chance": 0.1, # Will use base std_devs from base stat as the std_devs for the normal distribution
+    },
     "BLOB_SIZE": {
         "mean": 20,
         "std_dev": 3,
@@ -36,10 +46,10 @@ BLOB_CONFIG = {
         "max": 30
     },
     "BLOB_SPEED": {
-        "mean": 3,
-        "std_dev": 0,
-        "min": 2,
-        "max": 4
+        "mean": 2,
+        "std_dev": 1,
+        "min": 1,
+        "max": 3
     },
     "BLOB_START_ENERGY": {
         "mean": 3000,
