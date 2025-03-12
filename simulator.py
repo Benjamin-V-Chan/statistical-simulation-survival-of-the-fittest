@@ -38,7 +38,13 @@ BLOB_CONFIG = {
             "max": 5500
         },
         "excess_energy_required": 100, # Extra energy required on top of required_energy for blob to reproduce. Ensures Blob doesn't immediately die after reproduction.
-        "mutation_chance": 0.1, # Will use base std_devs from base stat as the std_devs for the normal distribution
+        "mutation_chance": 0.1, # Will use base std_devs from base stat as the std_devs for the normal distribution,
+        "number_of_mutated_stats": {
+            "mean": 2,
+            "std_dev": 0.7,
+            "min": 1,
+            "max": 4            
+        },
         "offspring_amount": {
             "mean": 1,
             "std_dev": 0.5,
@@ -151,7 +157,7 @@ def generate_normal_stat_with_dict(stat_dict):
     )
 
 def generate_blob(custom_blob_config=BLOB_CONFIG):
-    '''Returns a Blob object of Class Blob based off (optional) dictionary config (else, defaults to global config, BLOB_CONFIG)'''
+    '''Returns a Blob object of Class Blob based off (optional) dictionary config (else, defaults to global config, BLOB_CONFIG), and custom_attributes dictionary config (else, defaults to None)'''
 
     blob_size = generate_normal_stat_with_dict(custom_blob_config["BLOB_SIZE"])
     
@@ -235,7 +241,7 @@ class Food:
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
 class Blob:
-    def __init__(self, id, color, x, y, required_reproduction_energy, offspring_amount, size, speed, energy):
+    def __init__(self, id, color, x, y, required_reproduction_energy, offspring_amount, size, speed, energy, start_energy):
         self.id = id
         self.color = color
         self.x = x
@@ -245,6 +251,7 @@ class Blob:
         self.size = size
         self.speed = speed
         self.energy = energy
+        self.start_energy = start_energy
         self.actions = []
 
     def food_action(self, foods):
@@ -285,8 +292,13 @@ class Blob:
         self.energy -= energy_used
 
         self.actions.append("constant energy")
+    blob_size = generate_normal_stat_with_dict(custom_blob_config["BLOB_SIZE"])
 
     def reproduce(self):
+        self.energy -= self.required_reproduction_energy
+        if random.random() < BLOB_CONFIG["BLOB_REPRODUCTION"]["mutation_chance"]: # Mutation occurs
+            pass
+            generate_blob(self.attribute_dict)
         # duplicate blob
         # apply BLOB_CONFIG mutation chance
         # use generate normal stat to "reproduce" with a mutation
