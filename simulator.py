@@ -2,6 +2,7 @@ import pygame
 import random
 import math
 import numpy as np
+from datetime import datetime
 
 pygame.init()
 
@@ -21,7 +22,7 @@ BLUE = (64, 64, 255)
 
 # START CONFIG
 SIMULATION_START_CONFIG = {
-    "N_STARTING_BLOBS": 10,
+    "N_STARTING_BLOB": 10,
     "N_STARTING_FOOD": 50,
 }
 
@@ -121,7 +122,7 @@ def generate_normal_stat(mean, std_dev, min, max):
     generated_stat = np.random.normal(mean, std_dev)
     while min < generated_stat < max:
         generated_stat = np.random.normal(mean, std_dev)
-    return generated_stat
+    return int(generated_stat)
 
 def generate_normal_stat_with_dict(stat_dict):
     '''Returns a random statistic based off predetermined normal distribution parameters from a config dictionary. Config dictionary must have 'mean', 'std_dev', 'min', and 'max' keys.'''
@@ -134,9 +135,13 @@ def generate_normal_stat_with_dict(stat_dict):
 
 def generate_blob(custom_blob_config=BLOB_CONFIG):
     '''Returns a Blob object of Class Blob based off (optional) dictionary config (else, defaults to global config, BLOB_CONFIG)'''
-    
+
+    print(datetime.now())
+    print("generating blob!")
     blob_size = generate_normal_stat_with_dict(custom_blob_config["BLOB_SIZE"])
     
+    print(datetime.now())
+    print("blob_size generated!")
     return Blob(
         blob_id_tracker.issue_id(),
         random.choice(custom_blob_config["BLOB_COLORS"]), 
@@ -151,7 +156,7 @@ def generate_food(custom_food_config=FOOD_CONFIG):
     '''Returns a Food object of Class Food based off (optional) dictionary config (else, defaults to global config, FOOD_CONFIG)'''
 
     food_size = generate_normal_stat_with_dict(custom_food_config["FOOD_SIZE"])
-    
+
     return Food(
         food_id_tracker.issue_id(), 
         random.choice(custom_food_config["FOOD_COLORS"]),
@@ -159,7 +164,7 @@ def generate_food(custom_food_config=FOOD_CONFIG):
         random.randint(food_size, SCREEN_HEIGHT - food_size),
         food_size
         )
-    
+
 class IDTracker:
     def __init__(self):
         self.current_id = 0
@@ -210,8 +215,9 @@ class Food:
         if isinstance(other, Food):
             return self.id == other.id
         return False
-    
+
     def draw(self):
+        print('food')
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
 class Blob:
@@ -302,16 +308,26 @@ class Blob:
         return False
     
     def draw(self):
+        print('blob')
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.size)
 
 def main():
 
     # will remain static food elements for now. will change over time
-    for _ in range(SIMULATION_START_CONFIG["N_STARTING_FOODS"]): # Food Creation
+    for _ in range(SIMULATION_START_CONFIG["N_STARTING_FOOD"]): # Food Creation
         foods.append(generate_food())
+        print(len(foods))
 
-    for _ in range(SIMULATION_START_CONFIG["N_STARTING_BLOBS"]): # Blob Creation        
+    for _ in range(SIMULATION_START_CONFIG["N_STARTING_BLOB"]): # Blob Creation        
+        print(datetime.now())
+        print("blob generating...")
+        
         blobs.append(generate_blob())
+        
+        print(datetime.now())
+        print("blob generated!")
+        
+        print(len(blobs))
 
     running = True
     while running:
@@ -330,6 +346,7 @@ def main():
         
         random.shuffle(blobs) # Shuffle to ensure fairness and equal chance for best order
         for blob in blobs:
+            print('blob cycle')
             blob.use_constant_energy()
             blob.food_action(foods)
             if blob.energy <= 0: # Blob no longer has energy, so it will perish
