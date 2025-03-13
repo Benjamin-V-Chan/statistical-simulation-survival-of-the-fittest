@@ -10,6 +10,7 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 800
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
+font = pygame.font.Font(None, 36)
 
 # CONSTANTS
 BLACK = (0, 0, 0)
@@ -428,6 +429,27 @@ def main():
         # TODO Add logic to store each game state for data purposes (time-based game state data so we can analyze trends over time and stuff)
             # Should be a DF containing each Blob's attributes (diffrentiated by its id attribute) as well as the time (aka generation/day) of that data snapshot
         
+        statistics_text = f"""
+        BLOB STATS
+        blob count: {len(blobs)}
+        blob average speed: {average_attribute(blobs, 'speed')}
+        blob min speed: {min_attribute(blobs, 'speed')}
+        blob max speed: {max_attribute(blobs, 'speed')}
+        blob average size: {average_attribute(blobs, 'size')}
+        blob min size: {min_attribute(blobs, 'size')}
+        blob max size: {max_attribute(blobs, 'size')}
+        blob average energy: {average_attribute(blobs, 'speed')}
+        blob min energy: {min_attribute(blobs, 'energy')}
+        blob max energy: {max_attribute(blobs, 'energy')}
+        
+        FOOD STATS
+        food count: {len(foods)}"""
+
+        # Render text (parameters: text, antialiasing, color)
+        statistics_text_surface = font.render(statistics_text, True, WHITE)
+        text_rect = statistics_text_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+        screen.blit(statistics_text_surface, text_rect)
+
         pygame.display.flip()
 
         clock.tick(FPS)
