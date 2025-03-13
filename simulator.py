@@ -217,6 +217,15 @@ def generate_food(custom_food_config=FOOD_CONFIG):
         food_size
         )
 
+def average_attribute(entities, attribute):
+    return sum(getattr(obj, attribute) for obj in entities) / len(entities) if entities else 0
+
+def max_attribute(entities, attribute):
+    return max(getattr(obj, attribute) for obj in entities) if entities else None
+
+def min_attribute(entities, attribute):
+    return min(getattr(obj, attribute) for obj in entities) if entities else None
+
 class IDTracker:
     def __init__(self):
         self.current_id = 0
