@@ -230,24 +230,16 @@ def min_attribute(entities, attribute):
     return min(getattr(obj, attribute) for obj in entities) if entities else None
 
 def render_dict_as_text(surface, stats_dict, font, color, x, y, line_spacing=5, rounding=1):
-    y_offset = 0  # Track vertical offset
-
-    for category, stats in stats_dict.items():
-        # Render the category header
-        category_surface = font.render(category, True, color)
-        surface.blit(category_surface, (x, y + y_offset))
-        y_offset += font.get_height() + line_spacing  # Move down for the next line
-
-        # Render each stat in the category
-        for key, value in stats.items():
-            stat_text = f"{key}: {round(value, rounding)}"
-            text_surface = font.render(stat_text, True, color)
-            surface.blit(text_surface, (x + 10, y + y_offset))  # Indent slightly
-            y_offset += font.get_height() + line_spacing  # Move down for the next line
-
-        # Add extra spacing between categories
-        y_offset += font.get_height()
-
+    """Render a dictionary as text on the pygame screen."""
+    
+    y_offset = 0
+    
+    for key, value in stats_dict.items():
+        stat_text = f"{key}: {round(value, rounding)}"
+        text_surface = font.render(stat_text, True, color)
+        surface.blit(text_surface, (x + 10, y + y_offset))
+        y_offset += font.get_height() + line_spacing
+            
 def save_statistics_to_csv():
     """Saves the logged simulation statistics to a CSV file."""
     filename = f"simulation_stats_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
@@ -428,7 +420,10 @@ def main():
     for _ in range(SIMULATION_START_CONFIG["N_STARTING_BLOB"]): # Blob Creation        
         blobs.append(generate_blob())
         
+    frame_count = 0
+    
     running = True
+    
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -461,33 +456,34 @@ def main():
 
         # TODO Add logic to store each game state for data purposes (time-based game state data so we can analyze trends over time and stuff)
             # Should be a DF containing each Blob's attributes (diffrentiated by its id attribute) as well as the time (aka generation/day) of that data snapshot
-        
-        if LIVE_STATS_DISPLAY:
             
-            statistics = {
-                "BLOB STATS": {
-                    "blob count": len(blobs),
-                    "blob average speed": average_attribute(blobs, "speed"),
-                    "blob min speed": min_attribute(blobs, "speed"),
-                    "blob max speed": max_attribute(blobs, "speed"),
-                    "blob average size": average_attribute(blobs, "size"),
-                    "blob min size": min_attribute(blobs, "size"),
-                    "blob max size": max_attribute(blobs, "size"),
-                    "blob average energy": average_attribute(blobs, "energy"),
-                    "blob min energy": min_attribute(blobs, "energy"),
-                    "blob max energy": max_attribute(blobs, "energy"),
-                },
-                "FOOD STATS": {
-                    "food count": len(foods)
-                }
-            }
+        statistics = {
+            "frame": frame_count,
+            "blob_count": len(blobs),
+            "blob_avg_speed": average_attribute(blobs, "speed"),
+            "blob_min_speed": min_attribute(blobs, "speed"),
+            "blob_max_speed": max_attribute(blobs, "speed"),
+            "blob_avg_size": average_attribute(blobs, "size"),
+            "blob_min_size": min_attribute(blobs, "size"),
+            "blob_max_size": max_attribute(blobs, "size"),
+            "blob_avg_energy": average_attribute(blobs, "energy"),
+            "blob_min_energy": min_attribute(blobs, "energy"),
+            "blob_max_energy": max_attribute(blobs, "energy"),
+            "food_count": len(foods),
+            "num_offsprings": NUM_OFFSPRINGS,
+            "num_mutations": NUM_MUTATIONS
+        }
 
+        statistics_log.append(statistics)
+
+        if LIVE_STATS_DISPLAY:
             render_dict_as_text(screen, statistics, font, WHITE, 0, 350)
     
         pygame.display.flip()
-
         clock.tick(FPS)
+        frame_count += 1
 
     pygame.quit()
+    save_statistics_to_csv()  # Save data when exiting
 
 main()
