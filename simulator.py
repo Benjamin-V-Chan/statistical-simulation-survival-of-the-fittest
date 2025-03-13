@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+import csv
 import numpy as np
 from datetime import datetime
 
@@ -22,6 +23,7 @@ BLUE = (64, 64, 255)
 LIVE_STATS_DISPLAY = True
 NUM_OFFSPRINGS = 0
 NUM_MUTATIONS = 0
+statistics_log = []  # List to store simulation statistics over time
 
 #TODO Eventually make config dicts into jsons that i can extract from
 
@@ -245,6 +247,15 @@ def render_dict_as_text(surface, stats_dict, font, color, x, y, line_spacing=5, 
 
         # Add extra spacing between categories
         y_offset += font.get_height()
+
+def save_statistics_to_csv():
+    """Saves the logged simulation statistics to a CSV file."""
+    filename = f"simulation_stats_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    with open(filename, mode="w", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=statistics_log[0].keys())
+        writer.writeheader()
+        writer.writerows(statistics_log)
+    print(f"Simulation statistics saved to {filename}")
         
 class IDTracker:
     def __init__(self):
