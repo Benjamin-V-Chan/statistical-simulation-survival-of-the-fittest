@@ -227,6 +227,15 @@ def max_attribute(entities, attribute):
 def min_attribute(entities, attribute):
     return min(getattr(obj, attribute) for obj in entities) if entities else None
 
+def render_multiline_text(surface, text, font, color, x, y, line_spacing=5):
+    lines = text.strip().split("\n")  # Split text into lines
+    y_offset = 0  # Track vertical offset
+
+    for line in lines:
+        text_surface = font.render(line, True, color)
+        surface.blit(text_surface, (x, y + y_offset))
+        y_offset += font.get_height() + line_spacing  # Move down for the next line
+        
 class IDTracker:
     def __init__(self):
         self.current_id = 0
