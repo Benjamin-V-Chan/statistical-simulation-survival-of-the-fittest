@@ -19,6 +19,10 @@ RED = (255, 64, 64)
 GREEN = (64, 255, 64)
 BLUE = (64, 64, 255)
 
+LIVE_STATS_DISPLAY = True
+NUM_OFFSPRINGS = 0
+NUM_MUTATIONS = 0
+
 #TODO Eventually make config dicts into jsons that i can extract from
 
 # START CONFIG
@@ -38,14 +42,8 @@ BLOB_CONFIG = {
             "min": 4500,
             "max": 5500
         },
-        "excess_energy_required": 100, # Extra energy required on top of required_energy for blob to reproduce. Ensures Blob doesn't immediately die after reproduction.
-        "mutation_chance": 0.1, # Will use base std_devs from base stat as the std_devs for the normal distribution,
-        "number_of_mutated_stats": {
-            "mean": 2,
-            "std_dev": 0.7,
-            "min": 1,
-            "max": 4            
-        },
+        "excess_energy_required": 300, # Extra energy required on top of required_energy for blob to reproduce. Ensures Blob doesn't immediately die after reproduction.
+        "mutation_chance": 0.05, # Will use base std_devs from base stat as the std_devs for the normal distribution
         "offspring_amount": {
             "mean": 1,
             "std_dev": 0.5,
@@ -92,7 +90,7 @@ ENVIRONMENT_CONFIG = {
     #TODO
 }
     
-FPS = 30
+FPS = 120
 
 # Track all existing foods and blobs
 foods = []
@@ -162,7 +160,9 @@ def mutate_attribute(value, attribute_dict):
     Applies mutation to an attribute based on a probability.
     If mutation occurs, generates a new value within the defined range.
     """
+    global NUM_MUTATIONS
     if random.random() < BLOB_CONFIG["BLOB_REPRODUCTION"]["mutation_chance"]:
+        NUM_MUTATIONS += 1
         return generate_normal_stat_with_dict(attribute_dict)
     return value
 
@@ -348,9 +348,12 @@ class Blob:
         The parent blob loses the required reproduction energy.
         """
         self.energy -= self.required_reproduction_energy
+        
+        global NUM_OFFSPRINGS
 
         offspring_list = []
         for _ in range(self.offspring_amount):
+            NUM_OFFSPRINGS += 1
             offspring_list.append(generate_blob(parent_blob=self))
 
         return offspring_list
@@ -438,27 +441,29 @@ def main():
         # TODO Add logic to store each game state for data purposes (time-based game state data so we can analyze trends over time and stuff)
             # Should be a DF containing each Blob's attributes (diffrentiated by its id attribute) as well as the time (aka generation/day) of that data snapshot
         
-        statistics_text = f"""
-        BLOB STATS
-        blob count: {len(blobs)}
-        blob average speed: {average_attribute(blobs, 'speed')}
-        blob min speed: {min_attribute(blobs, 'speed')}
-        blob max speed: {max_attribute(blobs, 'speed')}
-        blob average size: {average_attribute(blobs, 'size')}
-        blob min size: {min_attribute(blobs, 'size')}
-        blob max size: {max_attribute(blobs, 'size')}
-        blob average energy: {average_attribute(blobs, 'speed')}
-        blob min energy: {min_attribute(blobs, 'energy')}
-        blob max energy: {max_attribute(blobs, 'energy')}
-        
-        FOOD STATS
-        food count: {len(foods)}"""
+        if LIVE_STATS_DISPLAY:
+            statistics_text = f"""
+            SIMULATION STATS
+            num_offsprings: {NUM_OFFSPRINGS}
+            num_mutations: {NUM_MUTATIONS}
+            
+            BLOB STATS
+            blob count: {len(blobs)}
+            blob average speed: {round(average_attribute(blobs, 'speed'))}
+            blob min speed: {round(min_attribute(blobs, 'speed'))}
+            blob max speed: {round(max_attribute(blobs, 'speed'))}
+            blob average size: {round(average_attribute(blobs, 'size'))}
+            blob min size: {round(min_attribute(blobs, 'size'))}
+            blob max size: {round(max_attribute(blobs, 'size'))}
+            blob average energy: {round(average_attribute(blobs, 'energy'))}
+            blob min energy: {round(min_attribute(blobs, 'energy'))}
+            blob max energy: {round(max_attribute(blobs, 'energy'))}
+            
+            FOOD STATS
+            food count: {len(foods)}"""
 
-        # Render text (parameters: text, antialiasing, color)
-        statistics_text_surface = font.render(statistics_text, True, WHITE)
-        text_rect = statistics_text_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-        screen.blit(statistics_text_surface, text_rect)
-
+            render_multiline_text(screen, statistics_text, font, WHITE, 0, 350)
+    
         pygame.display.flip()
 
         clock.tick(FPS)
