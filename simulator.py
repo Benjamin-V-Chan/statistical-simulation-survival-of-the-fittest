@@ -242,7 +242,7 @@ def render_dict_as_text(surface, stats_dict, font, color, x, y, line_spacing=5, 
             
 def save_statistics_to_csv():
     """Saves the logged simulation statistics to a CSV file."""
-    filename = f"simulation_stats_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    filename = f"data/simulation_stats_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
     with open(filename, mode="w", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=statistics_log[0].keys())
         writer.writeheader()
