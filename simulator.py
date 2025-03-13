@@ -10,7 +10,7 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 800
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
-font = pygame.font.Font(None, 36)
+font = pygame.font.Font(None, 24)
 
 # CONSTANTS
 BLACK = (0, 0, 0)
@@ -227,14 +227,24 @@ def max_attribute(entities, attribute):
 def min_attribute(entities, attribute):
     return min(getattr(obj, attribute) for obj in entities) if entities else None
 
-def render_multiline_text(surface, text, font, color, x, y, line_spacing=5):
-    lines = text.strip().split("\n")  # Split text into lines
+def render_dict_as_text(surface, stats_dict, font, color, x, y, line_spacing=5, rounding=1):
     y_offset = 0  # Track vertical offset
 
-    for line in lines:
-        text_surface = font.render(line, True, color)
-        surface.blit(text_surface, (x, y + y_offset))
+    for category, stats in stats_dict.items():
+        # Render the category header
+        category_surface = font.render(category, True, color)
+        surface.blit(category_surface, (x, y + y_offset))
         y_offset += font.get_height() + line_spacing  # Move down for the next line
+
+        # Render each stat in the category
+        for key, value in stats.items():
+            stat_text = f"{key}: {round(value, rounding)}"
+            text_surface = font.render(stat_text, True, color)
+            surface.blit(text_surface, (x + 10, y + y_offset))  # Indent slightly
+            y_offset += font.get_height() + line_spacing  # Move down for the next line
+
+        # Add extra spacing between categories
+        y_offset += font.get_height()
         
 class IDTracker:
     def __init__(self):
@@ -442,27 +452,26 @@ def main():
             # Should be a DF containing each Blob's attributes (diffrentiated by its id attribute) as well as the time (aka generation/day) of that data snapshot
         
         if LIVE_STATS_DISPLAY:
-            statistics_text = f"""
-            SIMULATION STATS
-            num_offsprings: {NUM_OFFSPRINGS}
-            num_mutations: {NUM_MUTATIONS}
             
-            BLOB STATS
-            blob count: {len(blobs)}
-            blob average speed: {round(average_attribute(blobs, 'speed'))}
-            blob min speed: {round(min_attribute(blobs, 'speed'))}
-            blob max speed: {round(max_attribute(blobs, 'speed'))}
-            blob average size: {round(average_attribute(blobs, 'size'))}
-            blob min size: {round(min_attribute(blobs, 'size'))}
-            blob max size: {round(max_attribute(blobs, 'size'))}
-            blob average energy: {round(average_attribute(blobs, 'energy'))}
-            blob min energy: {round(min_attribute(blobs, 'energy'))}
-            blob max energy: {round(max_attribute(blobs, 'energy'))}
-            
-            FOOD STATS
-            food count: {len(foods)}"""
+            statistics = {
+                "BLOB STATS": {
+                    "blob count": len(blobs),
+                    "blob average speed": average_attribute(blobs, "speed"),
+                    "blob min speed": min_attribute(blobs, "speed"),
+                    "blob max speed": max_attribute(blobs, "speed"),
+                    "blob average size": average_attribute(blobs, "size"),
+                    "blob min size": min_attribute(blobs, "size"),
+                    "blob max size": max_attribute(blobs, "size"),
+                    "blob average energy": average_attribute(blobs, "energy"),
+                    "blob min energy": min_attribute(blobs, "energy"),
+                    "blob max energy": max_attribute(blobs, "energy"),
+                },
+                "FOOD STATS": {
+                    "food count": len(foods)
+                }
+            }
 
-            render_multiline_text(screen, statistics_text, font, WHITE, 0, 350)
+            render_dict_as_text(screen, statistics, font, WHITE, 0, 350)
     
         pygame.display.flip()
 
