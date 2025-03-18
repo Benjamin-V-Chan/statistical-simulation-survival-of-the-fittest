@@ -20,6 +20,7 @@ RED = (255, 64, 64)
 GREEN = (64, 255, 64)
 BLUE = (64, 64, 255)
 
+QUICK_DATA_MODE = False # Don't display simulation, JUST GET DATA
 LIVE_STATS_DISPLAY = True
 NUM_OFFSPRINGS = 0
 NUM_MUTATIONS = 0
@@ -435,8 +436,9 @@ def main():
         if random.random() < FOOD_CONFIG["FOOD_SPAWN_CHANCE_PER_FRAME"]:
             foods.append(generate_food())
             
-        for food in foods:
-            food.draw()
+        if not QUICK_DATA_MODE:
+            for food in foods:
+                food.draw()
             
         random.shuffle(blobs) # Shuffle to ensure fairness and equal chance for best order
         for blob in blobs:
@@ -452,7 +454,8 @@ def main():
                 blobs.extend(offspring)
                 
             # blob.print_stats(show_actions=False)
-            blob.draw()
+            if not QUICK_DATA_MODE:
+                blob.draw()
 
         # TODO Add logic to store each game state for data purposes (time-based game state data so we can analyze trends over time and stuff)
             # Should be a DF containing each Blob's attributes (diffrentiated by its id attribute) as well as the time (aka generation/day) of that data snapshot
@@ -480,7 +483,9 @@ def main():
             render_dict_as_text(screen, statistics, font, WHITE, 0, 350)
     
         pygame.display.flip()
-        clock.tick(FPS)
+
+        if not QUICK_DATA_MODE:
+            clock.tick(FPS)
         frame_count += 1
 
     pygame.quit()
