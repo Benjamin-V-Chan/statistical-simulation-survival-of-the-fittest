@@ -99,8 +99,8 @@ def plot_multiple_attributes(csv_filename, attributes):
     except Exception as e:
         print(f"Error reading CSV file: {e}")
         
-csv_file = "simulation_stats_20250312_205257.csv"  # Replace with actual filename
-attributes_to_plot = ['blob_avg_speed','blob_avg_size','blob_avg_energy','food_count']  # List of attributes to visualize
+csv_file = "data\simulation_stats_20250312_211257.csv"  # Replace with actual filename
+attributes_to_plot = ['blob_count', 'blob_avg_speed','blob_avg_size','blob_avg_energy','food_count', 'num_offspring']  # List of attributes to visualize
 
 plot_multiple_attributes(csv_file, attributes_to_plot)
 plot_overlapping_attributes(csv_file, attributes_to_plot)
